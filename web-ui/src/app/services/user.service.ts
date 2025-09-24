@@ -9,7 +9,7 @@ import { UserFilter } from '../models/userFilter';
   providedIn: 'root'
 })
 export class UserService extends AbstractService<User, UserFilter> {
-  override baseUrl = 'http://localhost:8080/api/users'; // Adjust to your backend URL
+  override baseUrl = 'http://localhost:8080/api/users'; 
 
   constructor(http: HttpClient) {
     super(http);
