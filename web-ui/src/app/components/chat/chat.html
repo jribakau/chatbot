@@ -1,0 +1,66 @@
+<div class="chat-container">
+  <aside class="sidebar">
+    <div class="brand">Chatbot</div>
+    <div class="conversations-header">
+      <button class="new-chat-btn" (click)="startNewChat()">+ New Chat</button>
+    </div>
+    <ul class="conversation-list">
+      <li
+        class="conversation-item"
+        *ngFor="let c of conversations; let i = index"
+        [class.active]="i === activeConversationIndex"
+        (click)="switchConversation(i)"
+      >
+        <div class="avatar">{{ c.icon }}</div>
+        <div class="meta">
+          <div class="name">{{ c.title }}</div>
+          <div class="last-message" title="{{ c.lastMessage }}">{{ c.lastMessage }}</div>
+        </div>
+      </li>
+    </ul>
+  </aside>
+
+  <main class="chat-pane">
+    <header class="chat-header">
+      <div class="participant">
+        <div class="avatar large">{{ activeConversation?.icon }}</div>
+        <div>
+          <div class="name">{{ activeConversation?.title }}</div>
+          <div class="status">Online</div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="icon-btn" title="Logout" (click)="onLogout()">⎋</button>
+        <button class="icon-btn" title="Clear chat" (click)="clearChat()">🗑</button>
+        <button class="icon-btn" title="Settings" (click)="toggleSettings()">⚙</button>
+      </div>
+    </header>
+
+    <section class="messages" #messagesScroll>
+      <div
+        class="message"
+        *ngFor="let m of messages"
+        [ngClass]="m.role"
+      >
+        <div class="bubble">
+          <div class="content">{{ m.text }}</div>
+          <div class="timestamp">{{ m.timestamp | date: 'shortTime' }}</div>
+        </div>
+      </div>
+
+      <div class="typing" *ngIf="isTyping">
+        <span></span><span></span><span></span>
+      </div>
+    </section>
+
+    <footer class="composer">
+      <textarea
+        [(ngModel)]="draft"
+        (keydown)="onKeyDown($event)"
+        placeholder="Write a message..."
+        rows="1"
+      ></textarea>
+      <button class="send-btn" [disabled]="!draft.trim()" (click)="send()">Send</button>
+    </footer>
+  </main>
+</div>
