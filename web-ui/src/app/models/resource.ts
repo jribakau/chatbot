@@ -1,8 +1,7 @@
-import { UUID } from "crypto";
 import { ResourceStatusEnum } from "../enums/resourceStatusEnum";
 
 export interface Resource {
-    id?: UUID;
+    id?: string;
     resourceStatus?: ResourceStatusEnum;
     createdAt?: Date;
     updatedAt?: Date;

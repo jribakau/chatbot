@@ -111,6 +111,15 @@
 }
 .icon-btn:hover { background: #f7f7ff; }
 
+/* character selector style */
+.actions select {
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid #eceaf5;
+  background: #fff;
+  padding: 0 8px;
+}
+
 .messages {
   overflow: auto;
   padding: 16px;

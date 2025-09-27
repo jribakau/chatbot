@@ -30,6 +30,9 @@
         </div>
       </div>
       <div class="actions">
+        <select [(ngModel)]="selectedCharacterId" (change)="onCharacterChange()" title="Select character">
+          <option *ngFor="let ch of characters" [value]="ch.id">{{ ch.name }}</option>
+        </select>
         <button class="icon-btn" title="Logout" (click)="onLogout()">⎋</button>
         <button class="icon-btn" title="Clear chat" (click)="clearChat()">🗑</button>
         <button class="icon-btn" title="Settings" (click)="toggleSettings()">⚙</button>
@@ -43,7 +46,7 @@
         [ngClass]="m.role"
       >
         <div class="bubble">
-          <div class="content">{{ m.text }}</div>
+          <div class="content">{{ m.content }}</div>
           <div class="timestamp">{{ m.timestamp | date: 'shortTime' }}</div>
         </div>
       </div>

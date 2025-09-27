@@ -1,4 +1,4 @@
-export declare enum ResourceStatusEnum {
+export enum ResourceStatusEnum {
     NONE = "NONE",
     NEW = "NEW",
     ACTIVE = "ACTIVE",
