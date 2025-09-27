@@ -9,12 +9,6 @@ import { ChatMessage } from '../../models/chatMessage';
 import { MessageRoleEnum } from '../../enums/messageRoleEnum';
 import { CharacterService } from '../../services/character.service';
 
-interface ConversationMeta {
-  title: string;
-  icon: string;
-  lastMessage: string;
-}
-
 @Component({
   selector: 'app-chat',
   standalone: true,
@@ -25,14 +19,8 @@ interface ConversationMeta {
 export class ChatComponent implements OnInit {
   @ViewChild('messagesScroll') messagesScroll?: ElementRef<HTMLDivElement>;
 
-  conversations: ConversationMeta[] = [
-    { title: 'New chat', icon: '💬', lastMessage: 'Start a new conversation' }
-  ];
-  activeConversationIndex = 0;
-
-  messages: ChatMessage[] = [
-    { role: MessageRoleEnum.ASSISTANT, content: 'Hi! How can I help you today? 😊', timestamp: new Date() },
-  ];
+  messages: ChatMessage[] = [];
+  private messagesByCharacter: Record<string, ChatMessage[]> = {};
 
   draft = '';
   isTyping = false;
@@ -55,33 +43,47 @@ export class ChatComponent implements OnInit {
       next: (chars) => {
         this.characters = chars;
         if (chars.length && !this.selectedCharacterId) {
-          this.selectedCharacterId = chars[0].id || null;
-          this.updateActiveConversationHeader();
+          const firstId = chars[0].id || null;
+          if (firstId) {
+            this.selectCharacter(firstId);
+          }
         }
       },
       error: (err) => console.error('Failed to load characters', err)
     });
   }
 
-  get activeConversation(): ConversationMeta | undefined {
-    return this.conversations[this.activeConversationIndex];
+  get activeCharacter(): Character | undefined {
+    return this.characters.find(c => c.id === this.selectedCharacterId);
   }
 
   startNewChat() {
-    this.conversations.unshift({ title: 'New chat', icon: '💬', lastMessage: 'Start a new conversation' });
-    this.activeConversationIndex = 0;
-    this.messages = [{ role: MessageRoleEnum.ASSISTANT, content: 'New chat started! What’s on your mind?', timestamp: new Date() }];
+    if (!this.selectedCharacterId) return;
+    const greeting = this.buildGreeting();
+    this.messagesByCharacter[this.selectedCharacterId] = greeting ? [greeting] : [];
+    this.messages = this.messagesByCharacter[this.selectedCharacterId];
     this.scrollToBottomSoon();
   }
 
-  switchConversation(index: number) {
-    this.activeConversationIndex = index;
-    // For demo purposes, conversations do not persist distinct messages.
+  selectCharacter(id: string | undefined | null) {
+    if (!id) return;
+    this.selectedCharacterId = id;
+    if (!this.messagesByCharacter[id]) {
+      const greeting = this.buildGreeting();
+      this.messagesByCharacter[id] = greeting ? [greeting] : [];
+    }
+    this.messages = this.messagesByCharacter[id];
     this.scrollToBottomSoon();
   }
 
   clearChat() {
-    this.messages = [];
+    if (!this.selectedCharacterId) {
+      this.messages = [];
+      return;
+    }
+    const greeting = this.buildGreeting();
+    this.messagesByCharacter[this.selectedCharacterId] = greeting ? [greeting] : [];
+    this.messages = this.messagesByCharacter[this.selectedCharacterId];
   }
 
   toggleSettings() {
@@ -124,7 +126,6 @@ export class ChatComponent implements OnInit {
     this.draft = '';
     this.scrollToBottomSoon();
 
-    // Call backend chat
     this.isTyping = true;
     const history: ChatMessage[] = this.messages;
 
@@ -134,8 +135,6 @@ export class ChatComponent implements OnInit {
         const replyText = resp.content;
         const ts = resp.timestamp ? new Date(resp.timestamp as any) : new Date();
         this.messages.push({ role: MessageRoleEnum.ASSISTANT, content: replyText, timestamp: ts });
-        this.conversations[this.activeConversationIndex].lastMessage = replyText;
-        this.updateConversationTitleIfNeeded(content);
         this.scrollToBottomSoon();
       },
       error: (err) => {
@@ -154,22 +153,10 @@ export class ChatComponent implements OnInit {
     }, 0);
   }
 
-  private updateConversationTitleIfNeeded(firstUserMessage: string) {
-    if (this.conversations[this.activeConversationIndex].title === 'New chat') {
-      this.conversations[this.activeConversationIndex].title = firstUserMessage.slice(0, 24) || 'Conversation';
-    }
-  }
-
-  onCharacterChange() {
-    this.updateActiveConversationHeader();
-  }
-
-  private updateActiveConversationHeader() {
-    const current = this.conversations[this.activeConversationIndex];
-    const char = this.characters.find(c => c.id === this.selectedCharacterId);
-    if (char) {
-      current.icon = (char.name?.[0]?.toUpperCase() || '🤖');
-      current.title = char.name || 'Character';
-    }
+  private buildGreeting(): ChatMessage | null {
+    const ch = this.activeCharacter;
+    if (!ch) return null;
+    const text = ch.shortGreeting || 'Hi! How can I help you today? 😊';
+    return { role: MessageRoleEnum.ASSISTANT, content: text, timestamp: new Date() };
   }
 }

@@ -18,19 +18,19 @@ public class CharacterController {
     private CharacterService characterService;
 
     @GetMapping("/characters")
-    public List<jr.chatbot.entity.Character> getCharacters() {
+    public List<Character> getCharacters() {
         return characterService.getAllCharacters();
     }
 
     @GetMapping("/characters/{id}")
-    public ResponseEntity<jr.chatbot.entity.Character> getCharacter(@PathVariable UUID id) {
+    public ResponseEntity<Character> getCharacter(@PathVariable UUID id) {
         return characterService.getCharacterById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/characters")
-    public ResponseEntity<jr.chatbot.entity.Character> createCharacter(@RequestBody jr.chatbot.entity.Character character) {
+    public ResponseEntity<Character> createCharacter(@RequestBody Character character) {
         Character savedCharacter = characterService.saveCharacter(character);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedCharacter);
     }
