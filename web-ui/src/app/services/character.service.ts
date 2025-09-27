@@ -2,14 +2,13 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { Character } from "../models/character";
-import { ChatMessage } from "../models/chatMessage";
-import { ChatMessageFilter } from "../models/chatMessageFilter";
 import { AbstractService } from "./abstract.service";
 import { CharacterFilter } from "../models/characterFilter";
+import { environment } from "../../environments/environment";
 
 @Injectable({ providedIn: 'root' })
 export class CharacterService extends AbstractService<Character, CharacterFilter> {
-  override baseUrl = 'http://localhost:8080/api';
+  override baseUrl = environment.apiBaseUrl;
 
   constructor(http: HttpClient) {
     super(http);

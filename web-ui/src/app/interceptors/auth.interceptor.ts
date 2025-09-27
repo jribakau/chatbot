@@ -1,4 +1,5 @@
 import { HttpInterceptorFn } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   try {
@@ -6,8 +7,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       ? (localStorage.getItem('authToken') || sessionStorage.getItem('authToken'))
       : null;
 
-    // Attach token only for our backend API
-    const isApi = req.url.startsWith('http://localhost:8080/');
+  const apiPrefix = environment.apiBaseUrl.replace(/\/$/, '');
+  const isApi = req.url.startsWith(apiPrefix);
     if (token && isApi) {
       req = req.clone({ setHeaders: { Authorization: `Bearer ${token}` } });
     }

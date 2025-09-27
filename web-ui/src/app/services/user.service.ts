@@ -4,12 +4,13 @@ import { Observable } from 'rxjs';
 import { User } from '../models/user';
 import { AbstractService } from './abstract.service';
 import { UserFilter } from '../models/userFilter';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService extends AbstractService<User, UserFilter> {
-  override baseUrl = 'http://localhost:8080/api/users'; 
+  override baseUrl = `${environment.apiBaseUrl}/users`;
 
   constructor(http: HttpClient) {
     super(http);
