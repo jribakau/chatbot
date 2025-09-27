@@ -7,7 +7,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       ? (localStorage.getItem('authToken') || sessionStorage.getItem('authToken'))
       : null;
 
-  const apiPrefix = environment.apiBaseUrl.replace(/\/$/, '') + '/';
+  const apiPrefix = environment.apiBaseUrl.replace(/\/$/, '');
   const isApi = req.url.startsWith(apiPrefix);
     if (token && isApi) {
       req = req.clone({ setHeaders: { Authorization: `Bearer ${token}` } });
