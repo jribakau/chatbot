@@ -11,7 +11,7 @@
         [class.active]="ch.id === selectedCharacterId"
         (click)="selectCharacter(ch.id)"
       >
-        <div class="avatar">{{ (ch.name.slice(0,1) | uppercase) || '🤖' }}</div>
+        <div class="avatar">{{ (ch.name?.slice(0,1) | uppercase) || '🤖' }}</div>
         <div class="meta">
           <div class="name">{{ ch.name }}</div>
           <div class="last-message" title="{{ ch.shortGreeting || ch.description }}">{{ ch.shortGreeting || ch.description }}</div>
