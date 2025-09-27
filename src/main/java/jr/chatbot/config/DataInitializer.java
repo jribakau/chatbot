@@ -36,6 +36,18 @@ public class DataInitializer {
     @Value("${app.test.character.short-greeting}")
     private String testCharacterShortGreeting;
 
+    @Value("${app.test.character1.name}")
+    private String testCharacterName1;
+
+    @Value("${app.test.character1.description}")
+    private String testCharacterDescription1;
+
+    @Value("${app.test.character1.system-prompt}")
+    private String testCharacterSystemPrompt1;
+
+    @Value("${app.test.character1.short-greeting}")
+    private String testCharacterShortGreeting1;
+
     @Autowired
     private UserRepository userRepository;
 
@@ -66,7 +78,7 @@ public class DataInitializer {
     public ApplicationRunner initTestCharacter() {
         return args -> {
             if (characterRepository.findByName(testCharacterName).isEmpty()) {
-                Character testChar = new Character();
+                var testChar = new Character();
                 testChar.setName(testCharacterName);
                 testChar.setDescription(testCharacterDescription);
                 testChar.setSystemPrompt(testCharacterSystemPrompt);
@@ -75,6 +87,17 @@ public class DataInitializer {
                 System.out.println("Test character created.");
             } else {
                 System.out.println("Test character already exists.");
+            }
+            if (characterRepository.findByName(testCharacterName1).isEmpty()) {
+                var testChar = new Character();
+                testChar.setName(testCharacterName1);
+                testChar.setDescription(testCharacterDescription1);
+                testChar.setSystemPrompt(testCharacterSystemPrompt1);
+                testChar.setShortGreeting(testCharacterShortGreeting1);
+                characterRepository.save(testChar);
+                System.out.println("Test character1 created.");
+            } else {
+                System.out.println("Test character1 already exists.");
             }
         };
     }
