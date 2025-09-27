@@ -1,7 +1,8 @@
 package jr.chatbot.service;
 
-import jr.chatbot.dto.deepseek.DeepSeekChatRequest;
-import jr.chatbot.dto.deepseek.DeepSeekChatResponse;
+import jr.chatbot.dto.openrouter.OpenAIMessage;
+import jr.chatbot.dto.openrouter.OpenRouterChatRequest;
+import jr.chatbot.dto.openrouter.OpenRouterChatResponse;
 import jr.chatbot.entity.Character;
 import jr.chatbot.entity.ChatMessage;
 import jr.chatbot.enums.MessageRoleEnum;
@@ -18,14 +19,14 @@ import java.util.List;
 
 @Service
 public class ChatService {
-    @Value("${deepseek.api.key}")
+    @Value("${openrouter.api.key}")
     private String apiKey;
 
-    @Value("${deepseek.api.url}")
-    private String deepseekApiUrl;
+    @Value("${openrouter.api.url}")
+    private String openRouterApiUrl;
 
-    @Value("${deepseek.model}")
-    private String deepseekModel;
+    @Value("${openrouter.model}")
+    private String openRouterModel;
 
     private final RestTemplate restTemplate;
 
@@ -35,38 +36,50 @@ public class ChatService {
 
     public ChatMessage getAIResponse(Character character, List<ChatMessage> history, String userMessage) {
         if (apiKey == null || apiKey.isBlank()) {
-            return new ChatMessage(MessageRoleEnum.ASSISTANT, "[Error: AI API Key is missing. Set DEEPSEEK_API_KEY environment variable.]" , ZonedDateTime.now());
+            return new ChatMessage(MessageRoleEnum.ASSISTANT, "[Error: AI API Key is missing. Set OPENROUTER_API_KEY environment variable.]" , ZonedDateTime.now());
         }
 
-        List<ChatMessage> messagesToSend = new ArrayList<>();
-        messagesToSend.add(new ChatMessage(MessageRoleEnum.SYSTEM, character.getSystemPrompt(), ZonedDateTime.now()));
-        messagesToSend.addAll(history);
-        messagesToSend.add(new ChatMessage(MessageRoleEnum.USER, userMessage, ZonedDateTime.now()));
+        var messagesToSend = new ArrayList<OpenAIMessage>();
+        messagesToSend.add(new OpenAIMessage("system", character.getSystemPrompt()));
+        if (history != null) {
+            messagesToSend.addAll(history.stream()
+                    .map(msg -> new OpenAIMessage(
+                            msg.getRole() != null ? msg.getRole().name().toLowerCase() : "user",
+                            msg.getContent()
+                    ))
+                    .toList());
+        }
+        messagesToSend.add(new OpenAIMessage("user", userMessage));
 
-        var requestPayload = new DeepSeekChatRequest();
-        requestPayload.setModel(deepseekModel);
+        var requestPayload = new OpenRouterChatRequest();
+        requestPayload.setModel(openRouterModel);
         requestPayload.setMessages(messagesToSend);
+        // Optionally tune these; keep null to use provider defaults
+        // requestPayload.setMaxTokens(8192);
+        // requestPayload.setTemperature(1.0);
 
-        HttpHeaders headers = new HttpHeaders();
+        var headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(apiKey);
+        // Optional but recommended by OpenRouter
+        headers.add("HTTP-Referer", "http://localhost");
+        headers.add("X-Title", "Chatbot");
 
-        HttpEntity<DeepSeekChatRequest> entity = new HttpEntity<>(requestPayload, headers);
+        var entity = new HttpEntity<>(requestPayload, headers);
 
         try {
-            ResponseEntity<DeepSeekChatResponse> response = restTemplate.postForEntity(
-                    deepseekApiUrl,
+            var response = restTemplate.postForEntity(
+                    openRouterApiUrl,
                     entity,
-                    DeepSeekChatResponse.class
+                    OpenRouterChatResponse.class
             );
 
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null &&
                     response.getBody().getChoices() != null && !response.getBody().getChoices().isEmpty()) {
 
-                ChatMessage aiMessage = response.getBody().getChoices().getFirst().getMessage();
+                var aiMessage = response.getBody().getChoices().getFirst().getMessage();
                 if (aiMessage != null && aiMessage.getContent() != null) {
-                    aiMessage.setRole(MessageRoleEnum.ASSISTANT);
-                    return aiMessage;
+                    return new ChatMessage(MessageRoleEnum.ASSISTANT, aiMessage.getContent(), ZonedDateTime.now());
                 } else {
                     return new ChatMessage(MessageRoleEnum.ASSISTANT, "[Error: Received empty content from AI]", ZonedDateTime.now());
                 }
@@ -75,7 +88,7 @@ public class ChatService {
             }
 
         } catch (HttpClientErrorException e) {
-            String errorMsg = "[Error: Failed to communicate with AI. Status: " + e.getStatusCode() + "]";
+            var errorMsg = "[Error: Failed to communicate with AI. Status: " + e.getStatusCode() + "]";
             if(e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
                 errorMsg = "[Error: AI API Key is invalid or missing.]";
             } else if (e.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
@@ -89,3 +102,4 @@ public class ChatService {
         }
     }
 }
+
