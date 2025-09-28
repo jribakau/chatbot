@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 export abstract class AbstractService<TEntity, TFilter> {
   abstract baseUrl: string;
 
-  constructor(protected http: HttpClient) {}
+  constructor(protected http: HttpClient) { }
 
   list(filter: TFilter): Observable<TEntity[]> {
     return this.http.get<TEntity[]>(this.baseUrl, { params: filter as any });
