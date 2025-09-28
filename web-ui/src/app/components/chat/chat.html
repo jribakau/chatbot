@@ -23,7 +23,7 @@
   <main class="chat-pane">
     <header class="chat-header">
       <div class="participant">
-        <div class="avatar large">{{ activeCharacter?.name ? (activeCharacter.name.slice(0,1) | uppercase) : '🤖' }}</div>
+        <div class="avatar large">{{ activeCharacter?.name ? (activeCharacter?.name?.slice(0,1) | uppercase) : '🤖' }}</div>
         <div>
           <div class="name">{{ activeCharacter?.name || 'Select a character' }}</div>
           <div class="status">Online</div>
