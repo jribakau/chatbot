@@ -27,6 +27,12 @@ export class LoginComponent {
                 if (response.token) {
                     localStorage.setItem('authToken', response.token);
                 }
+                if (response.userId) {
+                    localStorage.setItem('userId', response.userId);
+                }
+                if (response.username) {
+                    localStorage.setItem('username', response.username);
+                }
                 this.router.navigate(['/chat']);
             },
             (error: any) => {

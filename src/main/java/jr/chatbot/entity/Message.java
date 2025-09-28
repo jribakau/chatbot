@@ -14,7 +14,7 @@ import java.time.ZonedDateTime;
 @AllArgsConstructor
 @Data
 @Entity
-@Table(name = "messageList")
+@Table(name = "messages")
 public class Message extends Resource {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_id", nullable = false)
