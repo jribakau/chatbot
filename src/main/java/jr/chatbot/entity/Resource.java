@@ -19,6 +19,9 @@ public abstract class Resource {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
+    @Column(name = "owner_id")
+    private UUID ownerId;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "resource_status")
     private ResourceStatusEnum resourceStatus = ResourceStatusEnum.ACTIVE;
