@@ -12,4 +12,3 @@ public class ChatRequest {
     private List<ChatMessage> history;
     private String userMessage;
 }
-

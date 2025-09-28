@@ -28,6 +28,9 @@ public class ChatService {
     @Value("${openrouter.model}")
     private String openRouterModel;
 
+    private static final String HEADER_HTTP_REFERER = "HTTP-Referer";
+    private static final String HEADER_X_TITLE = "X-Title";
+
     private final RestTemplate restTemplate;
 
     public ChatService(RestTemplate restTemplate) {
@@ -36,70 +39,96 @@ public class ChatService {
 
     public ChatMessage getAIResponse(Character character, List<ChatMessage> history, String userMessage) {
         if (apiKey == null || apiKey.isBlank()) {
-            return new ChatMessage(MessageRoleEnum.ASSISTANT, "[Error: AI API Key is missing. Set OPENROUTER_API_KEY environment variable.]" , ZonedDateTime.now());
+            return error("AI API Key is missing. Set OPENROUTER_API_KEY environment variable.");
         }
 
-        var messagesToSend = new ArrayList<OpenAIMessage>();
-        messagesToSend.add(new OpenAIMessage("system", character.getSystemPrompt()));
-        if (history != null) {
-            messagesToSend.addAll(history.stream()
-                    .map(msg -> new OpenAIMessage(
-                            msg.getRole() != null ? msg.getRole().name().toLowerCase() : "user",
-                            msg.getContent()
-                    ))
-                    .toList());
+        try {
+            var requestEntity = buildRequest(character, history, userMessage);
+            var response = restTemplate.postForEntity(openRouterApiUrl, requestEntity, OpenRouterChatResponse.class);
+            return parseResponse(response);
+        } catch (HttpClientErrorException e) {
+            return mapClientError(e);
+        } catch (RestClientException e) {
+            return error("Could not connect to AI Service - " + e.getMessage());
+        } catch (Exception e) {
+            return error("Unexpected issue processing AI response");
         }
-        messagesToSend.add(new OpenAIMessage("user", userMessage));
+    }
 
-        var requestPayload = new OpenRouterChatRequest();
-        requestPayload.setModel(openRouterModel);
-        requestPayload.setMessages(messagesToSend);
-        // Optionally tune these; keep null to use provider defaults
-        // requestPayload.setMaxTokens(8192);
-        // requestPayload.setTemperature(1.0);
+    // Helpers
+    private HttpEntity<OpenRouterChatRequest> buildRequest(Character character, List<ChatMessage> history, String userMessage) {
+        var payload = new OpenRouterChatRequest();
+        payload.setModel(openRouterModel);
+        payload.setMessages(buildMessages(character, history, userMessage));
+        // Leave optional fields null to use provider defaults
+        // payload.setMaxTokens(8192);
+        // payload.setTemperature(1.0);
 
+        return new HttpEntity<>(payload, buildHeaders());
+    }
+
+    private List<OpenAIMessage> buildMessages(Character character, List<ChatMessage> history, String userMessage) {
+        var messages = new ArrayList<OpenAIMessage>();
+        var systemPrompt = character != null ? character.getSystemPrompt() : null;
+        messages.add(new OpenAIMessage("system", systemPrompt != null ? systemPrompt : ""));
+
+        if (history != null && !history.isEmpty()) {
+            for (var msg : history) {
+                var role = msg.getRole() != null ? msg.getRole().name().toLowerCase() : "user";
+                messages.add(new OpenAIMessage(role, msg.getContent()));
+            }
+        }
+
+        messages.add(new OpenAIMessage("user", userMessage));
+        return messages;
+    }
+
+    private HttpHeaders buildHeaders() {
         var headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(apiKey);
-        // Optional but recommended by OpenRouter
-        headers.add("HTTP-Referer", "http://localhost");
-        headers.add("X-Title", "Chatbot");
+        headers.add(HEADER_HTTP_REFERER, "http://localhost");
+        headers.add(HEADER_X_TITLE, "Chatbot");
+        return headers;
+    }
 
-        var entity = new HttpEntity<>(requestPayload, headers);
-
-        try {
-            var response = restTemplate.postForEntity(
-                    openRouterApiUrl,
-                    entity,
-                    OpenRouterChatResponse.class
-            );
-
-            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null &&
-                    response.getBody().getChoices() != null && !response.getBody().getChoices().isEmpty()) {
-
-                var aiMessage = response.getBody().getChoices().getFirst().getMessage();
-                if (aiMessage != null && aiMessage.getContent() != null) {
-                    return new ChatMessage(MessageRoleEnum.ASSISTANT, aiMessage.getContent(), ZonedDateTime.now());
-                } else {
-                    return new ChatMessage(MessageRoleEnum.ASSISTANT, "[Error: Received empty content from AI]", ZonedDateTime.now());
-                }
-            } else {
-                return new ChatMessage(MessageRoleEnum.ASSISTANT, "[Error: Invalid response from AI Service - Status: " + response.getStatusCode() + "]", ZonedDateTime.now());
-            }
-
-        } catch (HttpClientErrorException e) {
-            var errorMsg = "[Error: Failed to communicate with AI. Status: " + e.getStatusCode() + "]";
-            if(e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
-                errorMsg = "[Error: AI API Key is invalid or missing.]";
-            } else if (e.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
-                errorMsg = "[Error: Rate limit exceeded for AI API.]";
-            }
-            return new ChatMessage(MessageRoleEnum.ASSISTANT, errorMsg, ZonedDateTime.now());
-        } catch (RestClientException e) {
-            return new ChatMessage(MessageRoleEnum.ASSISTANT, "[Error: Could not connect to AI Service - " + e.getMessage() + "]", ZonedDateTime.now());
-        } catch (Exception e) {
-            return new ChatMessage(MessageRoleEnum.ASSISTANT, "[Error: Unexpected issue processing AI response]", ZonedDateTime.now());
+    private ChatMessage parseResponse(ResponseEntity<OpenRouterChatResponse> response) {
+        if (response == null) {
+            return error("Invalid response from AI Service - Response was null");
         }
+
+        if (!HttpStatus.OK.equals(response.getStatusCode())) {
+            return error("Invalid response from AI Service - Status: " + response.getStatusCode());
+        }
+
+        var body = response.getBody();
+        if (body == null || body.getChoices() == null || body.getChoices().isEmpty()) {
+            return error("Invalid response from AI Service - Empty body/choices");
+        }
+
+        var aiMessage = body.getChoices().getFirst().getMessage();
+        if (aiMessage == null || aiMessage.getContent() == null) {
+            return error("Received empty content from AI");
+        }
+
+        return assistant(aiMessage.getContent());
+    }
+
+    private ChatMessage mapClientError(HttpClientErrorException e) {
+        if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
+            return assistant("[Error: AI API Key is invalid or missing.]");
+        }
+        if (e.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
+            return assistant("[Error: Rate limit exceeded for AI API.]");
+        }
+        return assistant("[Error: Failed to communicate with AI. Status: " + e.getStatusCode() + "]");
+    }
+
+    private ChatMessage assistant(String content) {
+        return new ChatMessage(MessageRoleEnum.ASSISTANT, content, ZonedDateTime.now());
+    }
+
+    private ChatMessage error(String text) {
+        return assistant("[Error: " + text + "]");
     }
 }
-

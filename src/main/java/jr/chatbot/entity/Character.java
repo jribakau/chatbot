@@ -9,6 +9,7 @@ import org.hibernate.annotations.UuidGenerator;
 
 import java.util.UUID;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
 public class Character extends Resource {
