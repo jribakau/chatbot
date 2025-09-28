@@ -23,4 +23,8 @@ export class UserService extends AbstractService<User, UserFilter> {
   logout(): Observable<any> {
     return this.http.post(`${this.baseUrl}/logout`, {});
   }
+
+  getCurrentUserId(): string | null {
+    return localStorage.getItem('currentUserId');
+  }
 }

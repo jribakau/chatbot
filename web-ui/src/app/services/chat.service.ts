@@ -1,26 +1,15 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { ChatMessage } from '../models/chatMessage';
-import { AbstractService } from './abstract.service';
-import { ChatMessageFilter } from '../models/chatMessageFilter';
-import { environment } from '../../environments/environment';
+import { HttpClient } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { environment } from "../../environments/environment";
+import { AbstractService } from "./abstract.service";
+import { ChatFilter } from "../models/chatFilter";
+import { Chat } from "../models/chat";
 
 @Injectable({ providedIn: 'root' })
-export class ChatService extends AbstractService<ChatMessage, ChatMessageFilter> {
+export class ChatService extends AbstractService<Chat, ChatFilter> {
   override baseUrl = environment.apiBaseUrl;
 
   constructor(http: HttpClient) {
     super(http);
   }
-
-  sendChatMessage(characterId: string, history: ChatMessage[], userMessage: string): Observable<ChatMessage> {
-    const payload = {
-      characterId: characterId,
-      history: history,
-      userMessage: userMessage
-    };
-    return this.http.post<ChatMessage>(`${this.baseUrl}/chat`, payload);
-  }
-
 }

@@ -38,8 +38,8 @@ public class SecurityConfig {
                                 "/api/users/logout",
                                 "/error"
                         ).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/characters", "/api/characters/**", "/api/chat").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/chat").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/characters/**", "/api/chat", "/api/message").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/chat", "/api/message").permitAll()
                         .anyRequest().authenticated()
                 );
         return http.build();
@@ -47,13 +47,13 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
+        var configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:4200", "http://127.0.0.1:4200", "http://localhost:5173"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("authorization", "content-type", "x-auth-token"));
         configuration.setExposedHeaders(List.of("x-auth-token"));
         configuration.setAllowCredentials(true);
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        var source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }

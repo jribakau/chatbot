@@ -34,12 +34,12 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         if ((request.getUsername() == null && request.getEmail() == null) || request.getPassword() == null) {
-            Map<String, String> error = new HashMap<>();
+            var error = new HashMap<>();
             error.put("message", "username/email and password are required");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }
 
-        Optional<User> userOpt = (request.getUsername() != null && !request.getUsername().isBlank())
+        var userOpt = (request.getUsername() != null && !request.getUsername().isBlank())
                 ? userService.findByUsername(request.getUsername())
                 : userService.findByEmail(request.getEmail());
 
@@ -57,14 +57,14 @@ public class UserController {
                 return ResponseEntity.ok(response);
             }
         }
-        Map<String, String> error = new HashMap<>();
+        var error = new HashMap<>();
         error.put("message", "Invalid username/email or password");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request, @RequestBody(required = false) Map<String, String> body) {
-        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        var authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         String token = null;
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);

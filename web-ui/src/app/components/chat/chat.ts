@@ -3,11 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserService } from '../../services/user.service';
-import { ChatService } from '../../services/chat.service';
+import { MessageService } from '../../services/message.service';
 import { Character } from '../../models/character';
-import { ChatMessage } from '../../models/chatMessage';
+import { Message } from '../../models/message';
 import { MessageRoleEnum } from '../../enums/messageRoleEnum';
 import { CharacterService } from '../../services/character.service';
+import { ChatService } from '../../services/chat.service';
+import { Chat } from '../../models/chat';
 
 @Component({
   selector: 'app-chat',
@@ -19,19 +21,21 @@ import { CharacterService } from '../../services/character.service';
 export class ChatComponent implements OnInit {
   @ViewChild('messagesScroll') messagesScroll?: ElementRef<HTMLDivElement>;
 
-  messages: ChatMessage[] = [];
-  private messagesByCharacter: Record<string, ChatMessage[]> = {};
+  messages: Message[] = [];
+  private messagesByCharacter: Record<string, Message[]> = {};
 
   draft = '';
   isTyping = false;
   characters: Character[] = [];
   selectedCharacterId: string | null = null;
+  chat!: Chat;
 
   constructor(
     private router: Router,
     private userService: UserService,
-    private chatService: ChatService,
-    private characterService: CharacterService
+    private messageService: MessageService,
+    private characterService: CharacterService,
+    private chatService: ChatService
   ) {}
 
   ngOnInit(): void {
@@ -58,11 +62,16 @@ export class ChatComponent implements OnInit {
   }
 
   startNewChat() {
-    if (!this.selectedCharacterId) return;
+    if (!this.selectedCharacterId) {
+      return;
+    } 
     const greeting = this.buildGreeting();
     this.messagesByCharacter[this.selectedCharacterId] = greeting ? [greeting] : [];
     this.messages = this.messagesByCharacter[this.selectedCharacterId];
     this.scrollToBottomSoon();
+    this.chat = { userId: this.userService.getCurrentUserId() || '', characterId: this.selectedCharacterId, messageList: this.messages };
+    this.chatService.save(this.chat);
+    console.log('New chat started with character ID:', this.selectedCharacterId);
   }
 
   selectCharacter(id: string | undefined | null) {
@@ -127,9 +136,9 @@ export class ChatComponent implements OnInit {
     this.scrollToBottomSoon();
 
     this.isTyping = true;
-    const history: ChatMessage[] = this.messages;
+    const history: Message[] = this.messages;
 
-    this.chatService.sendChatMessage(this.selectedCharacterId, history, content).subscribe({
+    this.messageService.sendChatMessage(this.selectedCharacterId, history, content).subscribe({
       next: (resp) => {
         this.isTyping = false;
         const replyText = resp.content;
@@ -153,7 +162,7 @@ export class ChatComponent implements OnInit {
     }, 0);
   }
 
-  private buildGreeting(): ChatMessage | null {
+  private buildGreeting(): Message | null {
     const ch = this.activeCharacter;
     if (!ch) return null;
     const text = ch.shortGreeting || 'Hi! How can I help you today? 😊';
