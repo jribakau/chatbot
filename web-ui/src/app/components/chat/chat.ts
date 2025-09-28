@@ -36,7 +36,7 @@ export class ChatComponent implements OnInit {
     private messageService: MessageService,
     private characterService: CharacterService,
     private chatService: ChatService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadCharacters();
@@ -64,14 +64,11 @@ export class ChatComponent implements OnInit {
   startNewChat() {
     if (!this.selectedCharacterId) {
       return;
-    } 
+    }
     const greeting = this.buildGreeting();
     this.messagesByCharacter[this.selectedCharacterId] = greeting ? [greeting] : [];
     this.messages = this.messagesByCharacter[this.selectedCharacterId];
     this.scrollToBottomSoon();
-    this.chat = { userId: this.userService.getCurrentUserId() || '', characterId: this.selectedCharacterId, messageList: this.messages };
-    this.chatService.save(this.chat);
-    console.log('New chat started with character ID:', this.selectedCharacterId);
   }
 
   selectCharacter(id: string | undefined | null) {

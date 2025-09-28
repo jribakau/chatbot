@@ -7,9 +7,9 @@ import { Chat } from "../models/chat";
 
 @Injectable({ providedIn: 'root' })
 export class ChatService extends AbstractService<Chat, ChatFilter> {
-  override baseUrl = environment.apiBaseUrl;
+    override baseUrl = environment.apiBaseUrl;
 
-  constructor(http: HttpClient) {
-    super(http);
-  }
+    constructor(http: HttpClient) {
+        super(http);
+    }
 }
