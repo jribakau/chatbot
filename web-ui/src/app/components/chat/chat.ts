@@ -65,10 +65,28 @@ export class ChatComponent implements OnInit {
     if (!this.selectedCharacterId) {
       return;
     }
+
     const greeting = this.buildGreeting();
     this.messagesByCharacter[this.selectedCharacterId] = greeting ? [greeting] : [];
     this.messages = this.messagesByCharacter[this.selectedCharacterId];
     this.scrollToBottomSoon();
+
+    const userId = (typeof window !== 'undefined') ? localStorage.getItem('userId') : null;
+    const payload: Partial<Chat> = {
+      ownerId: userId || undefined,
+      characterId: this.selectedCharacterId,
+      messageList: []
+    };
+
+    this.chatService.createChat(payload).subscribe({
+      next: (created) => {
+        this.chat = created;
+        console.debug('Chat created', created);
+      },
+      error: (err) => {
+        console.error('Failed to create chat', err);
+      }
+    });
   }
 
   selectCharacter(id: string | undefined | null) {

@@ -13,8 +13,6 @@ import java.util.UUID;
 @Table(name = "chats")
 public class Chat extends Resource {
     @Column
-    private UUID userId;
-    @Column
     private UUID characterId;
     @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Message> messageList;
