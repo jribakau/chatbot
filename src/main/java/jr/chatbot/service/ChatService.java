@@ -116,12 +116,12 @@ public class ChatService {
 
     private ChatMessage mapClientError(HttpClientErrorException e) {
         if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
-            return assistant("[Error: AI API Key is invalid or missing.]");
+            return error("AI API Key is invalid or missing.");
         }
         if (e.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
-            return assistant("[Error: Rate limit exceeded for AI API.]");
+            return error("Rate limit exceeded for AI API.");
         }
-        return assistant("[Error: Failed to communicate with AI. Status: " + e.getStatusCode() + "]");
+        return error("Failed to communicate with AI. Status: " + e.getStatusCode());
     }
 
     private ChatMessage assistant(String content) {
