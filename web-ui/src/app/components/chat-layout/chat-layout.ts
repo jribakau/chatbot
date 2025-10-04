@@ -1,29 +1,26 @@
-import { Component, ElementRef, ViewChild, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { UserService } from '../../services/user.service';
+import { CharacterService } from '../../services/character.service';
+import { ChatService } from '../../services/chat.service';
 import { MessageService } from '../../services/message.service';
+import { UserService } from '../../services/user.service';
 import { Character } from '../../models/character';
 import { Message } from '../../models/message';
 import { MessageRoleEnum } from '../../enums/messageRoleEnum';
-import { CharacterService } from '../../services/character.service';
-import { ChatService } from '../../services/chat.service';
 import { Chat } from '../../models/chat';
+import { ChatSidebar } from '../chat-sidebar/chat-sidebar';
+import { ChatPane } from '../chat-pane/chat-pane';
 
 @Component({
-  selector: 'app-chat',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './chat.html',
-  styleUrls: ['./chat.scss']
+  selector: 'app-chat-layout',
+  imports: [ChatSidebar, ChatPane],
+  templateUrl: './chat-layout.html',
+  styleUrl: './chat-layout.scss'
 })
-export class ChatComponent implements OnInit {
-  @ViewChild('messagesScroll') messagesScroll?: ElementRef<HTMLDivElement>;
-
+export class ChatLayout implements OnInit {
   messages: Message[] = [];
   private messagesByCharacter: Record<string, Message[]> = {};
-
+  
   draft = '';
   isTyping = false;
   characters: Character[] = [];
@@ -69,7 +66,6 @@ export class ChatComponent implements OnInit {
     const greeting = this.buildGreeting();
     this.messagesByCharacter[this.selectedCharacterId] = greeting ? [greeting] : [];
     this.messages = this.messagesByCharacter[this.selectedCharacterId];
-    this.scrollToBottomSoon();
 
     const userId = (typeof window !== 'undefined') ? localStorage.getItem('userId') : null;
     const payload: Partial<Chat> = {
@@ -97,7 +93,6 @@ export class ChatComponent implements OnInit {
       this.messagesByCharacter[id] = greeting ? [greeting] : [];
     }
     this.messages = this.messagesByCharacter[id];
-    this.scrollToBottomSoon();
   }
 
   clearChat() {
@@ -131,16 +126,8 @@ export class ChatComponent implements OnInit {
     });
   }
 
-  onKeyDown(ev: KeyboardEvent) {
-    if (ev.key === 'Enter' && !ev.shiftKey) {
-      ev.preventDefault();
-      this.send();
-    }
-  }
-
-  send() {
-    const content = this.draft.trim();
-    if (!content) return;
+  onSendMessage(content: string) {
+    if (!content.trim()) return;
     if (!this.selectedCharacterId) {
       alert('Please select a character to chat with.');
       return;
@@ -148,7 +135,6 @@ export class ChatComponent implements OnInit {
 
     this.messages.push({ role: MessageRoleEnum.USER, content: content, timestamp: new Date() });
     this.draft = '';
-    this.scrollToBottomSoon();
 
     this.isTyping = true;
     const history: Message[] = this.messages;
@@ -159,22 +145,13 @@ export class ChatComponent implements OnInit {
         const replyText = resp.content;
         const ts = resp.timestamp ? new Date(resp.timestamp as any) : new Date();
         this.messages.push({ role: MessageRoleEnum.ASSISTANT, content: replyText, timestamp: ts });
-        this.scrollToBottomSoon();
       },
       error: (err) => {
         this.isTyping = false;
         console.error('Chat failed', err);
         this.messages.push({ role: MessageRoleEnum.ASSISTANT, content: 'Sorry, I had trouble responding. Please try again.', timestamp: new Date() });
-        this.scrollToBottomSoon();
       }
     });
-  }
-
-  private scrollToBottomSoon() {
-    setTimeout(() => {
-      const el = this.messagesScroll?.nativeElement;
-      if (el) el.scrollTop = el.scrollHeight;
-    }, 0);
   }
 
   private buildGreeting(): Message | null {
