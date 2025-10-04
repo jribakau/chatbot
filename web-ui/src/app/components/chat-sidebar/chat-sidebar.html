@@ -1,17 +1,17 @@
 <aside class="sidebar">
-  <div class="brand">Chatbot</div>
-  <div class="conversations-header">
-    <button class="new-chat-btn" (click)="onNewChat()" [disabled]="!selectedCharacterId">+ New Chat</button>
-  </div>
-  <ul class="conversation-list">
-    <li class="conversation-item" *ngFor="let ch of characters" [class.active]="ch.id === selectedCharacterId"
-      (click)="onSelectCharacter(ch.id)">
-      <div class="avatar">{{ (ch.name.slice(0,1) | uppercase) || '🤖' }}</div>
-      <div class="meta">
-        <div class="name">{{ ch.name }}</div>
-        <div class="last-message" title="{{ ch.shortGreeting || ch.description }}">{{ ch.shortGreeting ||
-          ch.description }}</div>
-      </div>
-    </li>
-  </ul>
+    <div class="brand">Chatbot</div>
+    <div class="conversations-header">
+        <button class="new-chat-btn" (click)="onNewChat()" [disabled]="!selectedCharacterId">+ New Chat</button>
+    </div>
+    <ul class="conversation-list">
+        <li class="conversation-item" *ngFor="let ch of characters" [class.active]="ch.id === selectedCharacterId"
+            (click)="onSelectCharacter(ch.id)">
+            <div class="avatar">{{ (ch.name.slice(0,1) | uppercase) || '🤖' }}</div>
+            <div class="meta">
+                <div class="name">{{ ch.name }}</div>
+                <div class="last-message" title="{{ ch.shortGreeting || ch.description }}">{{ ch.shortGreeting ||
+                    ch.description }}</div>
+            </div>
+        </li>
+    </ul>
 </aside>

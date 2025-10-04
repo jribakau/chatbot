@@ -1,5 +1,5 @@
-import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { AfterViewChecked, Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Character } from '../../models/character';
 import { Message } from '../../models/message';
@@ -17,7 +17,7 @@ export class ChatPane implements AfterViewChecked {
   @Input() messages: Message[] = [];
   @Input() isTyping = false;
   @Input() draft = '';
-  
+
   @Output() draftChange = new EventEmitter<string>();
   @Output() sendMessage = new EventEmitter<string>();
   @Output() logout = new EventEmitter<void>();
@@ -47,7 +47,7 @@ export class ChatPane implements AfterViewChecked {
   send() {
     const content = this.draft.trim();
     if (!content) return;
-    
+
     this.sendMessage.emit(content);
     this.draft = '';
     this.draftChange.emit('');
