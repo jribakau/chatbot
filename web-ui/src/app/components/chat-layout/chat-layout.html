@@ -1,20 +1,10 @@
 <div class="chat-container">
-  <app-chat-sidebar 
-    [characters]="characters"
-    [selectedCharacterId]="selectedCharacterId"
-    (characterSelected)="selectCharacter($event)"
-    (newChatClicked)="startNewChat()">
-  </app-chat-sidebar>
+    <app-chat-sidebar [characters]="characters" [selectedCharacterId]="selectedCharacterId"
+        (characterSelected)="selectCharacter($event)" (newChatClicked)="startNewChat()">
+    </app-chat-sidebar>
 
-  <app-chat-pane
-    [activeCharacter]="activeCharacter"
-    [messages]="messages"
-    [isTyping]="isTyping"
-    [draft]="draft"
-    (draftChange)="draft = $event"
-    (sendMessage)="onSendMessage($event)"
-    (logout)="onLogout()"
-    (clearChat)="clearChat()"
-    (settingsClicked)="toggleSettings()">
-  </app-chat-pane>
+    <app-chat-pane [activeCharacter]="activeCharacter" [messages]="messages" [isTyping]="isTyping" [draft]="draft"
+        (draftChange)="draft = $event" (sendMessage)="onSendMessage($event)" (logout)="onLogout()"
+        (clearChat)="clearChat()" (settingsClicked)="toggleSettings()">
+    </app-chat-pane>
 </div>

@@ -1,15 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { MessageRoleEnum } from '../../enums/messageRoleEnum';
+import { Character } from '../../models/character';
+import { Chat } from '../../models/chat';
+import { Message } from '../../models/message';
 import { CharacterService } from '../../services/character.service';
 import { ChatService } from '../../services/chat.service';
 import { MessageService } from '../../services/message.service';
 import { UserService } from '../../services/user.service';
-import { Character } from '../../models/character';
-import { Message } from '../../models/message';
-import { MessageRoleEnum } from '../../enums/messageRoleEnum';
-import { Chat } from '../../models/chat';
-import { ChatSidebar } from '../chat-sidebar/chat-sidebar';
 import { ChatPane } from '../chat-pane/chat-pane';
+import { ChatSidebar } from '../chat-sidebar/chat-sidebar';
 
 @Component({
   selector: 'app-chat-layout',
@@ -20,7 +20,7 @@ import { ChatPane } from '../chat-pane/chat-pane';
 export class ChatLayout implements OnInit {
   messages: Message[] = [];
   private messagesByCharacter: Record<string, Message[]> = {};
-  
+
   draft = '';
   isTyping = false;
   characters: Character[] = [];
