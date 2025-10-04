@@ -73,11 +73,11 @@
   margin-bottom: 10px;
 }
 
-.message.user {
+.message.USER {
   justify-content: flex-end;
 }
 
-.message.assistant {
+.message.ASSISTANT {
   justify-content: flex-start;
 }
 
@@ -90,14 +90,16 @@
   box-shadow: 0 6px 16px rgba(0, 0, 0, .06);
 }
 
-.user .bubble {
-  background: #6b66f1;
+.USER .bubble {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: #fff;
+  border-bottom-right-radius: 4px;
 }
 
-.assistant .bubble {
+.ASSISTANT .bubble {
   background: #f3f1fb;
   color: #1e1e1e;
+  border-bottom-left-radius: 4px;
 }
 
 .timestamp {
