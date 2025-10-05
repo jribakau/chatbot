@@ -1,5 +1,6 @@
 package jr.chatbot.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jr.chatbot.enums.MessageRoleEnum;
 import lombok.AllArgsConstructor;
@@ -18,6 +19,7 @@ import java.time.ZonedDateTime;
 public class Message extends Resource {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_id", nullable = false)
+    @JsonBackReference
     private Chat chat;
     @Column
     private MessageRoleEnum role;

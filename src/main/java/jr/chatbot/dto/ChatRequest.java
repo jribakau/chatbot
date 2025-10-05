@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.UUID;
 
 @Data
-public class MessageRequest {
-    private UUID chatId;
+public class ChatRequest {
+    private UUID ownerId;
     private UUID characterId;
-    private List<Message> history;
-    private String userMessage;
+    private List<Message> messageList;
 }
+
