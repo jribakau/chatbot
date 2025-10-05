@@ -1,0 +1,115 @@
+<div class="register-container">
+    <div class="register-card">
+        <div class="register-header">
+            <div class="logo-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+            </div>
+            <h1 class="title">Create Account</h1>
+            <p class="subtitle">Join us and start chatting with AI characters</p>
+        </div>
+
+        <form (ngSubmit)="onRegister()" #registerForm="ngForm" class="register-form">
+            <div class="input-group">
+                <label for="username" class="input-label">Username</label>
+                <div class="input-wrapper">
+                    <div class="input-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+                    <input id="username" type="text" placeholder="Choose a username" required
+                        [(ngModel)]="registerUser.username" name="username" class="input-field" />
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="email" class="input-label">Email</label>
+                <div class="input-wrapper">
+                    <div class="input-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                            </path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
+                    </div>
+                    <input id="email" type="email" placeholder="Enter your email" required
+                        [(ngModel)]="registerUser.email" name="email" class="input-field" />
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="password" class="input-label">Password</label>
+                <div class="input-wrapper">
+                    <div class="input-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                    </div>
+                    <input id="password" type="password" placeholder="Create a password" required
+                        [(ngModel)]="registerUser.passwordHash" name="password" class="input-field" />
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="confirmPassword" class="input-label">Confirm Password</label>
+                <div class="input-wrapper">
+                    <div class="input-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                    </div>
+                    <input id="confirmPassword" type="password" placeholder="Confirm your password" required
+                        [(ngModel)]="confirmPassword" name="confirmPassword" class="input-field" />
+                </div>
+            </div>
+
+            <div class="alert alert-error" *ngIf="errorMessage">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <span>{{ errorMessage }}</span>
+            </div>
+
+            <div class="alert alert-success" *ngIf="successMessage">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                <span>{{ successMessage }}</span>
+            </div>
+
+            <button type="submit" class="register-button" [disabled]="!registerForm.form.valid">
+                <span class="button-text">Create Account</span>
+                <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+            </button>
+        </form>
+
+        <div class="register-footer">
+            <p class="footer-text">Already have an account? <a routerLink="/login" class="footer-link">Sign in</a></p>
+        </div>
+    </div>
+
+    <div class="background-decoration">
+        <div class="circle circle-1"></div>
+        <div class="circle circle-2"></div>
+        <div class="circle circle-3"></div>
+    </div>
+</div>

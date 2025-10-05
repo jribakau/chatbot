@@ -16,6 +16,10 @@ export class UserService extends AbstractService<User, UserFilter> {
     super(http);
   }
 
+  register(user: User): Observable<any> {
+    return this.http.post(`${this.baseUrl}/register`, user);
+  }
+
   login(user: User): Observable<any> {
     return this.http.post(`${this.baseUrl}/login`, user);
   }

@@ -1,7 +1,10 @@
 package jr.chatbot.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jr.chatbot.dto.LoginRequest;
 import jr.chatbot.dto.LoginResponse;
+import jr.chatbot.dto.RegisterRequest;
+import jr.chatbot.dto.RegisterResponse;
 import jr.chatbot.entity.User;
 import jr.chatbot.service.TokenService;
 import jr.chatbot.service.UserService;
@@ -12,10 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
@@ -76,5 +77,42 @@ public class UserController {
         }
         return ResponseEntity.ok(Map.of("status", "logged out"));
     }
-}
 
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+        if (request.getUsername() == null || request.getUsername().isBlank()) {
+            var error = new HashMap<>();
+            error.put("message", "Username is required");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        }
+        if (request.getEmail() == null || request.getEmail().isBlank()) {
+            var error = new HashMap<>();
+            error.put("message", "Email is required");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        }
+        if (request.getPassword() == null || request.getPassword().isBlank()) {
+            var error = new HashMap<>();
+            error.put("message", "Password is required");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        }
+
+        try {
+            User user = userService.registerUser(
+                request.getUsername(),
+                request.getEmail(),
+                request.getPassword()
+            );
+            RegisterResponse response = new RegisterResponse(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                "User registered successfully"
+            );
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (RuntimeException e) {
+            var error = new HashMap<>();
+            error.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+        }
+    }
+}
