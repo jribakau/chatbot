@@ -85,6 +85,9 @@ public class SecurityConfig {
     }
 
     private List<String> parseCommaSeparated(String value) {
-        return Arrays.asList(value.split(","));
+        return Arrays.stream(value.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .toList();
     }
 }
