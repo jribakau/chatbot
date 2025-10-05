@@ -176,7 +176,6 @@ export class ChatLayout implements OnInit {
             return dateB - dateA;
           });
         this.pastChatsByCharacter[characterId] = pastChats;
-        console.debug('Loaded past chats for character', characterId, pastChats);
       },
       error: (err) => {
         console.error('Failed to load past chats', err);
