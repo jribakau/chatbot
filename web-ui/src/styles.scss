@@ -1,1 +1,339 @@
-/* You can add global styles to this file, and also import other style files */
+// ============================================
+// CSS VARIABLES
+// ============================================
+:root {
+    // Brand Colors
+    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --gradient-primary-hover: linear-gradient(135deg, #5568d3 0%, #6a3f91 100%);
+    --color-primary: #667eea;
+    --color-primary-dark: #764ba2;
+    --color-primary-light: #6a5fb1;
+    
+    // Background Colors
+    --bg-gradient-light: linear-gradient(135deg, #f7f8ff 0%, #f8f5ff 100%);
+    --bg-purple-light: #f0eeff;
+    --bg-purple-lighter: #f3f1fb;
+    --bg-purple-lightest: #f7f7ff;
+    --bg-white-alpha: rgba(255, 255, 255, 0.1);
+    --bg-white-alpha-dark: rgba(255, 255, 255, 0.2);
+    
+    // Border Colors
+    --border-light: #eceaf5;
+    --border-lighter: #e6e3f3;
+    --border-purple: #b6a9ef;
+    --border-purple-light: #e5deff;
+    
+    // Text Colors
+    --text-primary: #1e1e1e;
+    --text-secondary: #333;
+    --text-tertiary: #666;
+    --text-muted: #777;
+    --text-light: #7a7a7a;
+    --text-lighter: #999;
+    
+    // Border Radius
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 10px;
+    --radius-xl: 12px;
+    --radius-2xl: 16px;
+    
+    // Spacing
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 12px;
+    --spacing-lg: 16px;
+    --spacing-xl: 24px;
+    
+    // Transitions
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.2s ease;
+    --transition-smooth: 0.25s ease;
+    --transition-slow: 0.3s ease;
+    
+    // Shadows
+    --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
+    --shadow-purple: 0 8px 18px rgba(102, 126, 234, 0.25);
+    --shadow-purple-lg: 0 4px 12px rgba(102, 126, 234, 0.3);
+    
+    // Backdrop
+    --backdrop-blur: blur(8px);
+    --backdrop-blur-strong: blur(10px);
+    
+    // Breakpoints
+    --breakpoint-mobile: 768px;
+    --breakpoint-tablet: 900px;
+}
+
+// ============================================
+// UTILITY CLASSES
+// ============================================
+
+// Gradient backgrounds
+.gradient-primary {
+    background: var(--gradient-primary);
+}
+
+.gradient-text {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+// Avatar component
+.avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--bg-purple-light);
+    color: var(--color-primary-light);
+    font-weight: 700;
+    
+    &.large {
+        width: 40px;
+        height: 40px;
+    }
+    
+    &.small {
+        width: 32px;
+        height: 32px;
+    }
+}
+
+// Button base styles
+.btn {
+    padding: 12px 18px;
+    border: none;
+    border-radius: var(--radius-xl);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-slow);
+    
+    &:hover:not(:disabled) {
+        transform: translateY(-2px);
+    }
+    
+    &:active:not(:disabled) {
+        transform: translateY(0);
+    }
+    
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+}
+
+.btn-primary {
+    background: var(--gradient-primary);
+    color: white;
+    
+    &:hover:not(:disabled) {
+        box-shadow: var(--shadow-purple);
+    }
+}
+
+.btn-secondary {
+    background: white;
+    color: var(--color-primary);
+    border: 1px solid var(--border-lighter);
+    
+    &:hover:not(:disabled) {
+        background: var(--bg-purple-lightest);
+        border-color: var(--border-purple);
+    }
+}
+
+// Icon button
+.icon-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-light);
+    background: white;
+    cursor: pointer;
+    transition: background var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    &:hover {
+        background: var(--bg-purple-lightest);
+    }
+}
+
+// Focus states
+.focus-ring:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+    border-color: var(--border-purple);
+}
+
+// Input fields
+.input-base {
+    padding: 12px 14px;
+    border: 1px solid var(--border-lighter);
+    border-radius: var(--radius-xl);
+    font-size: 1rem;
+    outline: none;
+    transition: all var(--transition-normal);
+    
+    &:focus {
+        box-shadow: 0 0 0 3px rgba(118, 75, 162, 0.12);
+        border-color: var(--border-purple);
+    }
+}
+
+// Card component
+.card {
+    background: white;
+    border-radius: var(--radius-xl);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-slow);
+    
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+}
+
+// Glassmorphism effect
+.glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: var(--backdrop-blur-strong);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+// Backdrop blur backgrounds
+.backdrop-blur {
+    backdrop-filter: var(--backdrop-blur);
+}
+
+// ============================================
+// ANIMATIONS
+// ============================================
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes blink {
+    0%, 80%, 100% {
+        opacity: 0.2;
+    }
+    40% {
+        opacity: 1;
+    }
+}
+
+// ============================================
+// MIXINS (for SCSS files)
+// ============================================
+
+@mixin hover-lift {
+    transition: all var(--transition-slow);
+    
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+    
+    &:active {
+        transform: translateY(0);
+    }
+}
+
+@mixin gradient-bg {
+    background: var(--gradient-primary);
+    color: white;
+}
+
+@mixin focus-ring {
+    &:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+        border-color: var(--border-purple);
+    }
+}
+
+@mixin responsive-mobile {
+    @media (max-width: 768px) {
+        @content;
+    }
+}
+
+@mixin responsive-tablet {
+    @media (max-width: 900px) {
+        @content;
+    }
+}
+
+// ============================================
+// GLOBAL RESETS
+// ============================================
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+button {
+    font-family: inherit;
+}
+
+input, textarea {
+    font-family: inherit;
+}
