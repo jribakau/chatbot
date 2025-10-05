@@ -43,9 +43,10 @@ export class RegisterComponent {
             return;
         }
 
-        const userToRegister: User = {
-            ...this.registerUser,
-            passwordHash: this.password
+        const userToRegister = {
+            username: this.registerUser.username,
+            email: this.registerUser.email,
+            password: this.password
         };
 
         this.userService.register(userToRegister).subscribe(
