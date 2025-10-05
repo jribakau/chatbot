@@ -1,0 +1,34 @@
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, OnInit, PLATFORM_ID, inject } from '@angular/core';
+import { Router } from '@angular/router';
+
+@Component({
+    selector: 'app-landing',
+    standalone: true,
+    imports: [CommonModule],
+    templateUrl: './landing.html',
+    styleUrls: ['./landing.scss']
+})
+export class LandingComponent implements OnInit {
+    private platformId = inject(PLATFORM_ID);
+
+    constructor(private router: Router) { }
+
+    ngOnInit() {
+        if (isPlatformBrowser(this.platformId)) {
+            const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+            if (token) {
+                this.router.navigate(['/chat']);
+            }
+        }
+    }
+
+    navigateToLogin() {
+        this.router.navigate(['/login']);
+    }
+
+    navigateToRegister() {
+        this.router.navigate(['/register']);
+    }
+}
+
