@@ -238,10 +238,7 @@
 }
 
 .circle {
-	position: absolute;
-	border-radius: 50%;
-	background: var(--bg-white-alpha);
-	animation: float 20s infinite ease-in-out;
+	@include decorative-circle;
 
 	&.circle-1 {
 		width: 300px;
