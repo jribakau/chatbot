@@ -1,5 +1,6 @@
 package jr.chatbot.service;
 
+import jakarta.transaction.Transactional;
 import jr.chatbot.dto.openrouter.OpenAIMessage;
 import jr.chatbot.dto.openrouter.OpenRouterChatRequest;
 import jr.chatbot.dto.openrouter.OpenRouterChatResponse;
@@ -16,7 +17,6 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.transaction.Transactional;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
