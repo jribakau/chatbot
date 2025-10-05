@@ -15,7 +15,10 @@ import java.time.ZonedDateTime;
 @AllArgsConstructor
 @Data
 @Entity
-@Table(name = "messages")
+@Table(name = "messages", indexes = {
+    @Index(name = "idx_message_chat_id", columnList = "chat_id"),
+    @Index(name = "idx_message_timestamp", columnList = "timestamp")
+})
 public class Message extends Resource {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_id", nullable = false)
