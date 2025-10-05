@@ -27,4 +27,10 @@ export class ChatService extends AbstractService<Chat, ChatFilter> {
     getChatById(id: string): Observable<Chat> {
         return this.http.get<Chat>(`${this.baseUrl}/${id}`);
     }
+
+    getChatsByCharacter(characterId: string, ownerId: string): Observable<Chat[]> {
+        return this.http.get<Chat[]>(`${this.baseUrl}`, {
+            params: { characterId, ownerId }
+        });
+    }
 }

@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -34,6 +35,14 @@ public class ChatController {
 
         Chat savedChat = chatService.saveChat(chat);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedChat);
+    }
+
+    @GetMapping("/chat")
+    public ResponseEntity<List<Chat>> getChatsByCharacter(
+            @RequestParam UUID characterId,
+            @RequestParam UUID ownerId) {
+        List<Chat> chats = chatService.findAllChatsByCharacterAndOwner(characterId, ownerId);
+        return ResponseEntity.ok(chats);
     }
 
     @GetMapping("/chat/latest")

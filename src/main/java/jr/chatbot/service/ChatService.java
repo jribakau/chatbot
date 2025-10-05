@@ -5,6 +5,7 @@ import jr.chatbot.entity.Message;
 import jr.chatbot.repository.ChatRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -28,13 +29,17 @@ public class ChatService {
         return chatRepository.findLatestByCharacterIdAndOwnerId(characterId, ownerId);
     }
 
-    public Chat addMessageToChat(UUID chatId, Message message) {
+    public List<Chat> findAllChatsByCharacterAndOwner(UUID characterId, UUID ownerId) {
+        return chatRepository.findAllByCharacterIdAndOwnerId(characterId, ownerId);
+    }
+
+    public void addMessageToChat(UUID chatId, Message message) {
         Chat chat = chatRepository.findById(chatId)
                 .orElseThrow(() -> new RuntimeException("Chat not found"));
 
         message.setChat(chat);
         chat.getMessageList().add(message);
 
-        return chatRepository.save(chat);
+        chatRepository.save(chat);
     }
 }

@@ -1,6 +1,12 @@
 <div class="chat-container">
-    <app-chat-sidebar [characters]="characters" [selectedCharacterId]="selectedCharacterId"
-        (characterSelected)="selectCharacter($event)" (newChatClicked)="startNewChat()">
+    <app-chat-sidebar
+        [characters]="characters"
+        [selectedCharacterId]="selectedCharacterId"
+        [pastChatsByCharacter]="pastChatsByCharacter"
+        (characterSelected)="selectCharacter($event)"
+        (newChatClicked)="startNewChat()"
+        (loadPastChats)="onLoadPastChats($event)"
+        (pastChatSelected)="onSelectPastChat($event)">
     </app-chat-sidebar>
 
     <app-chat-pane [activeCharacter]="activeCharacter" [messages]="messages" [isTyping]="isTyping" [draft]="draft"
