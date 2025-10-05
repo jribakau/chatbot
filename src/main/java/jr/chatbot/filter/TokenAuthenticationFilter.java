@@ -36,12 +36,14 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
         if (token != null && tokenService.isValid(token)) {
             tokenService.getUserIdForToken(token).flatMap(userService::findById).ifPresent(user -> {
-                var authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
+                if (SecurityContextHolder.getContext().getAuthentication() == null) {
+                    var authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
 
-                var authentication = new UsernamePasswordAuthenticationToken(user, null, authorities);
+                    var authentication = new UsernamePasswordAuthenticationToken(user, null, authorities);
 
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
             });
         }
 
