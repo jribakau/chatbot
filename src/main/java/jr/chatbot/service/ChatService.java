@@ -1,8 +1,8 @@
 package jr.chatbot.service;
 
+import jakarta.transaction.Transactional;
 import jr.chatbot.entity.Chat;
 import jr.chatbot.entity.Message;
-import jr.chatbot.enums.ResourceStatusEnum;
 import jr.chatbot.repository.ChatRepository;
 import org.springframework.stereotype.Service;
 
@@ -56,12 +56,9 @@ public class ChatService {
         chatRepository.save(chat);
     }
 
-    public void softDeleteChatsByCharacterId(UUID characterId) {
-        List<Chat> chats = chatRepository.findByCharacterId(characterId);
-        for (Chat chat : chats) {
-            chat.setResourceStatus(ResourceStatusEnum.DELETED);
-            chatRepository.save(chat);
-        }
+    @Transactional
+    public int softDeleteChatsByCharacterId(UUID characterId) {
+        return chatRepository.bulkUpdateResourceStatusByCharacterId(characterId, jr.chatbot.enums.ResourceStatusEnum.DELETED);
     }
 
     public List<Chat> findAllChatsByCharacterId(UUID characterId) {

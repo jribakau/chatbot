@@ -1,7 +1,9 @@
 package jr.chatbot.repository;
 
 import jr.chatbot.entity.Chat;
+import jr.chatbot.enums.ResourceStatusEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -26,4 +28,8 @@ public interface ChatRepository extends JpaRepository<Chat, UUID> {
     List<Chat> findAllByCharacterIdAndOwnerIdWithMessages(@Param("characterId") UUID characterId, @Param("ownerId") UUID ownerId);
 
     List<Chat> findByCharacterId(UUID characterId);
+
+    @Modifying
+    @Query("UPDATE Chat c SET c.resourceStatus = :status WHERE c.characterId = :characterId")
+    int bulkUpdateResourceStatusByCharacterId(@Param("characterId") UUID characterId, @Param("status") ResourceStatusEnum status);
 }

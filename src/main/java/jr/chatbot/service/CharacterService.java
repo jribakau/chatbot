@@ -2,7 +2,6 @@ package jr.chatbot.service;
 
 import jakarta.transaction.Transactional;
 import jr.chatbot.entity.Character;
-import jr.chatbot.entity.Chat;
 import jr.chatbot.enums.ResourceStatusEnum;
 import jr.chatbot.repository.CharacterRepository;
 import jr.chatbot.util.SecurityUtil;
@@ -55,10 +54,7 @@ public class CharacterService {
             character.setResourceStatus(ResourceStatusEnum.DELETED);
             characterRepository.save(character);
 
-            List<Chat> chats = chatService.findAllChatsByCharacterId(id);
-            for (Chat chat : chats) {
-                messageService.softDeleteMessagesByChatId(chat.getId());
-            }
+            messageService.softDeleteMessagesByCharacterId(id);
             chatService.softDeleteChatsByCharacterId(id);
 
             return true;

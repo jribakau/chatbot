@@ -16,6 +16,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.transaction.Transactional;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -151,6 +152,11 @@ public class MessageService {
 
     private Message error(String text) {
         return assistant("[Error: " + text + "]");
+    }
+
+    @Transactional
+    public int softDeleteMessagesByCharacterId(UUID characterId) {
+        return messageRepository.bulkUpdateResourceStatusByCharacterId(characterId, jr.chatbot.enums.ResourceStatusEnum.DELETED);
     }
 
     public void softDeleteMessagesByChatId(UUID chatId) {
