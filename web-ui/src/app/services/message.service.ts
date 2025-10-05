@@ -14,8 +14,9 @@ export class MessageService extends AbstractService<Message, MessageFilter> {
     super(http);
   }
 
-  sendChatMessage(characterId: string, history: Message[], userMessage: string): Observable<Message> {
+  sendChatMessage(chatId: string, characterId: string, history: Message[], userMessage: string): Observable<Message> {
     const payload = {
+      chatId: chatId,
       characterId: characterId,
       history: history,
       userMessage: userMessage

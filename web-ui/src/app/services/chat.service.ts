@@ -17,4 +17,14 @@ export class ChatService extends AbstractService<Chat, ChatFilter> {
     createChat(payload: Partial<Chat>): Observable<Chat> {
         return this.save(payload as Chat);
     }
+
+    getLatestChat(characterId: string, ownerId: string): Observable<Chat> {
+        return this.http.get<Chat>(`${this.baseUrl}/latest`, {
+            params: { characterId, ownerId }
+        });
+    }
+
+    getChatById(id: string): Observable<Chat> {
+        return this.http.get<Chat>(`${this.baseUrl}/${id}`);
+    }
 }

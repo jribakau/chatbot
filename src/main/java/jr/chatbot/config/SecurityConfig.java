@@ -38,7 +38,7 @@ public class SecurityConfig {
                                 "/api/users/logout",
                                 "/error"
                         ).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/characters/**", "/api/chat", "/api/message").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/characters/**", "/api/chat/**", "/api/message").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/chat", "/api/message").permitAll()
                         .anyRequest().authenticated()
                 );

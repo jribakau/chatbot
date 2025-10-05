@@ -20,12 +20,13 @@ import { ChatSidebar } from '../chat-sidebar/chat-sidebar';
 export class ChatLayout implements OnInit {
   messages: Message[] = [];
   private messagesByCharacter: Record<string, Message[]> = {};
+  private chatByCharacter: Record<string, Chat> = {};
 
   draft = '';
   isTyping = false;
   characters: Character[] = [];
   selectedCharacterId: string | null = null;
-  chat!: Chat;
+  currentChat: Chat | null = null;
 
   constructor(
     private router: Router,
@@ -71,13 +72,14 @@ export class ChatLayout implements OnInit {
     const payload: Partial<Chat> = {
       ownerId: userId || undefined,
       characterId: this.selectedCharacterId,
-      messageList: []
+      messageList: greeting ? [greeting] : []
     };
 
     this.chatService.createChat(payload).subscribe({
       next: (created) => {
-        this.chat = created;
-        console.debug('Chat created', created);
+        this.currentChat = created;
+        this.chatByCharacter[this.selectedCharacterId!] = created;
+        console.debug('New chat created', created);
       },
       error: (err) => {
         console.error('Failed to create chat', err);
@@ -88,11 +90,42 @@ export class ChatLayout implements OnInit {
   selectCharacter(id: string | undefined | null) {
     if (!id) return;
     this.selectedCharacterId = id;
-    if (!this.messagesByCharacter[id]) {
-      const greeting = this.buildGreeting();
-      this.messagesByCharacter[id] = greeting ? [greeting] : [];
+
+    if (this.chatByCharacter[id]) {
+      this.currentChat = this.chatByCharacter[id];
+      this.messages = this.messagesByCharacter[id] || [];
+      return;
     }
-    this.messages = this.messagesByCharacter[id];
+
+    const userId = (typeof window !== 'undefined') ? localStorage.getItem('userId') : null;
+    if (userId) {
+      this.chatService.getLatestChat(id, userId).subscribe({
+        next: (chat) => {
+          this.currentChat = chat;
+          this.chatByCharacter[id] = chat;
+
+          const loadedMessages = chat.messageList || [];
+
+          if (loadedMessages.length === 0) {
+            const greeting = this.buildGreeting();
+            if (greeting) {
+              loadedMessages.push(greeting);
+            }
+          }
+
+          this.messagesByCharacter[id] = loadedMessages;
+          this.messages = loadedMessages;
+
+          console.debug('Loaded existing chat', chat);
+        },
+        error: (err) => {
+          console.debug('No existing chat found, starting new chat');
+          this.startNewChat();
+        }
+      });
+    } else {
+      this.startNewChat();
+    }
   }
 
   clearChat() {
@@ -100,9 +133,11 @@ export class ChatLayout implements OnInit {
       this.messages = [];
       return;
     }
-    const greeting = this.buildGreeting();
-    this.messagesByCharacter[this.selectedCharacterId] = greeting ? [greeting] : [];
-    this.messages = this.messagesByCharacter[this.selectedCharacterId];
+
+    this.messagesByCharacter[this.selectedCharacterId] = [];
+    this.messages = [];
+    delete this.chatByCharacter[this.selectedCharacterId];
+    this.startNewChat();
   }
 
   toggleSettings() {
@@ -133,18 +168,29 @@ export class ChatLayout implements OnInit {
       return;
     }
 
-    this.messages.push({ role: MessageRoleEnum.USER, content: content, timestamp: new Date() });
+    if (!this.currentChat || !this.currentChat.id) {
+      alert('Please wait for the chat to be initialized.');
+      return;
+    }
+
+    const userMsg: Message = { role: MessageRoleEnum.USER, content: content, timestamp: new Date() };
+    this.messages.push(userMsg);
     this.draft = '';
 
     this.isTyping = true;
-    const history: Message[] = this.messages;
+    const history: Message[] = this.messages.slice(0, -1);
 
-    this.messageService.sendChatMessage(this.selectedCharacterId, history, content).subscribe({
+    this.messageService.sendChatMessage(this.currentChat.id, this.selectedCharacterId, history, content).subscribe({
       next: (resp) => {
         this.isTyping = false;
         const replyText = resp.content;
         const ts = resp.timestamp ? new Date(resp.timestamp as any) : new Date();
-        this.messages.push({ role: MessageRoleEnum.ASSISTANT, content: replyText, timestamp: ts });
+        const aiMsg: Message = { role: MessageRoleEnum.ASSISTANT, content: replyText, timestamp: ts };
+        this.messages.push(aiMsg);
+
+        if (this.selectedCharacterId) {
+          this.messagesByCharacter[this.selectedCharacterId] = this.messages;
+        }
       },
       error: (err) => {
         this.isTyping = false;
