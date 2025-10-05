@@ -19,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -42,6 +43,10 @@ public class MessageService {
 
     public MessageService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
+    }
+
+    public Optional<Message> findById(UUID id) {
+        return messageRepository.findById(id);
     }
 
     public Message updateMessage(UUID id, Message updatedMessage) {
