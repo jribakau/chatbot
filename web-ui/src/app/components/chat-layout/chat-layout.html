@@ -5,6 +5,7 @@
         [pastChatsByCharacter]="pastChatsByCharacter"
         (characterSelected)="selectCharacter($event)"
         (newChatClicked)="startNewChat()"
+        (newCharacter)="createNewCharacter()"
         (loadPastChats)="onLoadPastChats($event)"
         (pastChatSelected)="onSelectPastChat($event)">
     </app-chat-sidebar>

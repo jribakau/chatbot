@@ -52,9 +52,11 @@ public class MessageController {
         }
 
         Message userMessage = new Message(MessageRoleEnum.USER, messageRequest.getUserMessage(), ZonedDateTime.now());
+        userMessage.setOwnerId(currentUserId);
         chatService.addMessageToChat(messageRequest.getChatId(), userMessage);
 
         Message aiResponse = messageService.getAIResponse(character, messageRequest.getHistory(), messageRequest.getUserMessage());
+        aiResponse.setOwnerId(currentUserId);
 
         chatService.addMessageToChat(messageRequest.getChatId(), aiResponse);
 

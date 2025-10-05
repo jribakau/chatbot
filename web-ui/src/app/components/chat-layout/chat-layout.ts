@@ -60,6 +60,10 @@ export class ChatLayout implements OnInit {
     return this.characters.find(c => c.id === this.selectedCharacterId);
   }
 
+  createNewCharacter() {
+    this.router.navigate(['/character']);
+  }
+
   startNewChat() {
     if (!this.selectedCharacterId) {
       return;

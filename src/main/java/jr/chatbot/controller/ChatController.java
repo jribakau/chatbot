@@ -35,6 +35,7 @@ public class ChatController {
         if (request.getMessageList() != null && !request.getMessageList().isEmpty()) {
             for (Message message : request.getMessageList()) {
                 message.setChat(chat);
+                message.setOwnerId(currentUserId);
             }
             chat.getMessageList().addAll(request.getMessageList());
         }

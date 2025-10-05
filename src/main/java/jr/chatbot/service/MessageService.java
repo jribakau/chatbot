@@ -152,4 +152,12 @@ public class MessageService {
     private Message error(String text) {
         return assistant("[Error: " + text + "]");
     }
+
+    public void softDeleteMessagesByChatId(UUID chatId) {
+        List<Message> messages = messageRepository.findByChatId(chatId);
+        for (Message message : messages) {
+            message.setResourceStatus(jr.chatbot.enums.ResourceStatusEnum.DELETED);
+            messageRepository.save(message);
+        }
+    }
 }

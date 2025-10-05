@@ -2,6 +2,7 @@ package jr.chatbot.service;
 
 import jr.chatbot.entity.Chat;
 import jr.chatbot.entity.Message;
+import jr.chatbot.enums.ResourceStatusEnum;
 import jr.chatbot.repository.ChatRepository;
 import org.springframework.stereotype.Service;
 
@@ -53,5 +54,17 @@ public class ChatService {
         chat.getMessageList().add(message);
 
         chatRepository.save(chat);
+    }
+
+    public void softDeleteChatsByCharacterId(UUID characterId) {
+        List<Chat> chats = chatRepository.findByCharacterId(characterId);
+        for (Chat chat : chats) {
+            chat.setResourceStatus(ResourceStatusEnum.DELETED);
+            chatRepository.save(chat);
+        }
+    }
+
+    public List<Chat> findAllChatsByCharacterId(UUID characterId) {
+        return chatRepository.findByCharacterId(characterId);
     }
 }
