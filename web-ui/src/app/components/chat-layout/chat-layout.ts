@@ -202,7 +202,6 @@ export class ChatLayout implements OnInit {
     this.messagesByCharacter[chat.characterId] = loadedMessages;
     this.messages = loadedMessages;
 
-    console.debug('Loaded past chat', chat);
   }
 
   onSendMessage(content: string) {
