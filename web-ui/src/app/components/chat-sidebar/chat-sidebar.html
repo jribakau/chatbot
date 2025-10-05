@@ -4,14 +4,36 @@
         <button class="new-chat-btn" (click)="onNewChat()" [disabled]="!selectedCharacterId">+ New Chat</button>
     </div>
     <ul class="conversation-list">
-        <li class="conversation-item" *ngFor="let ch of characters" [class.active]="ch.id === selectedCharacterId"
-            (click)="onSelectCharacter(ch.id)">
-            <div class="avatar">{{ (ch.name.slice(0,1) | uppercase) || '🤖' }}</div>
-            <div class="meta">
-                <div class="name">{{ ch.name }}</div>
-                <div class="last-message" title="{{ ch.shortGreeting || ch.description }}">{{ ch.shortGreeting ||
-                    ch.description }}</div>
+        <li *ngFor="let ch of characters" class="conversation-wrapper">
+            <div class="conversation-item" [class.active]="ch.id === selectedCharacterId"
+                (click)="onSelectCharacter(ch.id)">
+                <div class="avatar">{{ (ch.name.slice(0,1) | uppercase) || '🤖' }}</div>
+                <div class="meta">
+                    <div class="name">{{ ch.name }}</div>
+                    <div class="last-message" title="{{ ch.shortGreeting || ch.description }}">{{ ch.shortGreeting ||
+                        ch.description }}</div>
+                </div>
+                <button class="dropdown-toggle" (click)="togglePastChats($event, ch.id)"
+                        [class.expanded]="isExpanded(ch.id)">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M4.427 7.427l3.396 3.396a.25.25 0 00.354 0l3.396-3.396A.25.25 0 0011.396 7H4.604a.25.25 0 00-.177.427z"/>
+                    </svg>
+                </button>
             </div>
+
+            <ul class="past-chats-list" *ngIf="isExpanded(ch.id)">
+                <li *ngFor="let chat of getPastChats(ch.id)"
+                    class="past-chat-item"
+                    (click)="onSelectPastChat($event, chat)">
+                    <div class="past-chat-meta">
+                        <div class="past-chat-preview">{{ getChatPreview(chat) }}</div>
+                        <div class="past-chat-date">{{ getChatDate(chat) }}</div>
+                    </div>
+                </li>
+                <li *ngIf="getPastChats(ch.id).length === 0" class="no-chats">
+                    No past chats
+                </li>
+            </ul>
         </li>
     </ul>
 </aside>

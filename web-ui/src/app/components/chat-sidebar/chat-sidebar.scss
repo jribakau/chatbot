@@ -51,14 +51,19 @@
     overflow: auto;
 }
 
+.conversation-wrapper {
+    list-style: none;
+}
+
 .conversation-item {
     display: grid;
-    grid-template-columns: 36px 1fr;
+    grid-template-columns: 36px 1fr auto;
     align-items: center;
     gap: 10px;
     padding: 10px;
     border-radius: 10px;
     cursor: pointer;
+    position: relative;
 }
 
 .conversation-item:hover {
@@ -91,6 +96,90 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.dropdown-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    color: #6a5fb1;
+    transition: all 0.2s ease;
+    opacity: 0.6;
+}
+
+.dropdown-toggle:hover {
+    opacity: 1;
+    background: #e5deff;
+}
+
+.dropdown-toggle.expanded {
+    transform: rotate(180deg);
+}
+
+.past-chats-list {
+    list-style: none;
+    margin: 4px 0 8px 0;
+    padding: 0 0 0 46px;
+    animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.past-chat-item {
+    padding: 8px 10px;
+    margin: 2px 0;
+    border-radius: 8px;
+    cursor: pointer;
+    background: #f9f8fc;
+    border-left: 3px solid transparent;
+    transition: all 0.15s ease;
+}
+
+.past-chat-item:hover {
+    background: #f0eeff;
+    border-left-color: #667eea;
+}
+
+.past-chat-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.past-chat-preview {
+    font-size: 0.85rem;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px;
+}
+
+.past-chat-date {
+    font-size: 0.75rem;
+    color: #999;
+}
+
+.no-chats {
+    padding: 12px 10px;
+    text-align: center;
+    color: #999;
+    font-size: 0.85rem;
+    font-style: italic;
 }
 
 @media (max-width: 900px) {

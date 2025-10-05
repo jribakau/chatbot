@@ -21,6 +21,7 @@ export class ChatLayout implements OnInit {
   messages: Message[] = [];
   private messagesByCharacter: Record<string, Message[]> = {};
   private chatByCharacter: Record<string, Chat> = {};
+  pastChatsByCharacter: Record<string, Chat[]> = {};
 
   draft = '';
   isTyping = false;
@@ -161,6 +162,48 @@ export class ChatLayout implements OnInit {
     });
   }
 
+  onLoadPastChats(characterId: string) {
+    const userId = (typeof window !== 'undefined') ? localStorage.getItem('userId') : null;
+    if (!userId) return;
+
+    this.chatService.getChatsByCharacter(characterId, userId).subscribe({
+      next: (chats) => {
+        const pastChats = chats
+          .filter(chat => chat.id !== this.currentChat?.id)
+          .sort((a, b) => {
+            const dateA = new Date(a.updatedAt || a.createdAt || 0).getTime();
+            const dateB = new Date(b.updatedAt || b.createdAt || 0).getTime();
+            return dateB - dateA;
+          });
+        this.pastChatsByCharacter[characterId] = pastChats;
+      },
+      error: (err) => {
+        console.error('Failed to load past chats', err);
+        this.pastChatsByCharacter[characterId] = [];
+      }
+    });
+  }
+
+  onSelectPastChat(chat: Chat) {
+    if (!chat.id || !chat.characterId) return;
+
+    this.selectedCharacterId = chat.characterId;
+    this.currentChat = chat;
+    this.chatByCharacter[chat.characterId] = chat;
+
+    const loadedMessages = chat.messageList || [];
+    if (loadedMessages.length === 0) {
+      const greeting = this.buildGreeting();
+      if (greeting) {
+        loadedMessages.push(greeting);
+      }
+    }
+
+    this.messagesByCharacter[chat.characterId] = loadedMessages;
+    this.messages = loadedMessages;
+
+  }
+
   onSendMessage(content: string) {
     if (!content.trim()) return;
     if (!this.selectedCharacterId) {
@@ -207,3 +250,4 @@ export class ChatLayout implements OnInit {
     return { role: MessageRoleEnum.ASSISTANT, content: text, timestamp: new Date() };
   }
 }
+
