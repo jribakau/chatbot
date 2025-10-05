@@ -14,6 +14,7 @@ import { UserService } from '../../services/user.service';
 })
 export class LoginComponent {
     loginUser: User = {};
+    password: string = '';
 
     constructor(
         private userService: UserService,
@@ -21,7 +22,12 @@ export class LoginComponent {
     ) { }
 
     onLogin() {
-        this.userService.login(this.loginUser).subscribe(
+        const loginRequest = {
+            username: this.loginUser.username,
+            password: this.password
+        };
+
+        this.userService.login(loginRequest).subscribe(
             (response: any) => {
                 console.log('Login successful', response);
                 if (response.token) {

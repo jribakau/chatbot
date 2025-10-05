@@ -14,6 +14,7 @@ import { UserService } from '../../services/user.service';
 })
 export class RegisterComponent {
     registerUser: User = {};
+    password: string = '';
     confirmPassword: string = '';
     errorMessage: string = '';
     successMessage: string = '';
@@ -27,22 +28,28 @@ export class RegisterComponent {
         this.errorMessage = '';
         this.successMessage = '';
 
-        if (!this.registerUser.username || !this.registerUser.email || !this.registerUser.passwordHash) {
+        if (!this.registerUser.username || !this.registerUser.email || !this.password) {
             this.errorMessage = 'All fields are required';
             return;
         }
 
-        if (this.registerUser.passwordHash !== this.confirmPassword) {
+        if (this.password !== this.confirmPassword) {
             this.errorMessage = 'Passwords do not match';
             return;
         }
 
-        if (this.registerUser.passwordHash.length < 6) {
-            this.errorMessage = 'Password must be at least 6 characters long';
+        if (this.password.length < 8) {
+            this.errorMessage = 'Password must be at least 8 characters long';
             return;
         }
 
-        this.userService.register(this.registerUser).subscribe(
+        const userToRegister = {
+            username: this.registerUser.username,
+            email: this.registerUser.email,
+            password: this.password
+        };
+
+        this.userService.register(userToRegister).subscribe(
             (response: any) => {
                 console.log('Registration successful', response);
                 this.successMessage = 'Registration successful! Redirecting to login...';
