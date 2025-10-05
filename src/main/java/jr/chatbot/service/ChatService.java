@@ -25,12 +25,24 @@ public class ChatService {
         return chatRepository.findById(chatId);
     }
 
+    public Optional<Chat> findChatByIdWithMessages(UUID chatId) {
+        return chatRepository.findByIdWithMessages(chatId);
+    }
+
     public Optional<Chat> findLatestChatByCharacterAndOwner(UUID characterId, UUID ownerId) {
         return chatRepository.findLatestByCharacterIdAndOwnerId(characterId, ownerId);
     }
 
+    public Optional<Chat> findLatestChatByCharacterAndOwnerWithMessages(UUID characterId, UUID ownerId) {
+        return chatRepository.findLatestByCharacterIdAndOwnerIdWithMessages(characterId, ownerId);
+    }
+
     public List<Chat> findAllChatsByCharacterAndOwner(UUID characterId, UUID ownerId) {
         return chatRepository.findAllByCharacterIdAndOwnerId(characterId, ownerId);
+    }
+
+    public List<Chat> findAllChatsByCharacterAndOwnerWithMessages(UUID characterId, UUID ownerId) {
+        return chatRepository.findAllByCharacterIdAndOwnerIdWithMessages(characterId, ownerId);
     }
 
     public void addMessageToChat(UUID chatId, Message message) {

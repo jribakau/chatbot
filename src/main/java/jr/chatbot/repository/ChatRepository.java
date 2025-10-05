@@ -15,4 +15,13 @@ public interface ChatRepository extends JpaRepository<Chat, UUID> {
 
     @Query("SELECT c FROM Chat c WHERE c.characterId = :characterId AND c.ownerId = :ownerId ORDER BY c.updatedAt DESC, c.createdAt DESC")
     List<Chat> findAllByCharacterIdAndOwnerId(@Param("characterId") UUID characterId, @Param("ownerId") UUID ownerId);
+
+    @Query("SELECT c FROM Chat c LEFT JOIN FETCH c.messageList WHERE c.id = :id")
+    Optional<Chat> findByIdWithMessages(@Param("id") UUID id);
+
+    @Query("SELECT c FROM Chat c LEFT JOIN FETCH c.messageList WHERE c.characterId = :characterId AND c.ownerId = :ownerId ORDER BY c.createdAt DESC LIMIT 1")
+    Optional<Chat> findLatestByCharacterIdAndOwnerIdWithMessages(@Param("characterId") UUID characterId, @Param("ownerId") UUID ownerId);
+
+    @Query("SELECT DISTINCT c FROM Chat c LEFT JOIN FETCH c.messageList WHERE c.characterId = :characterId AND c.ownerId = :ownerId ORDER BY c.updatedAt DESC, c.createdAt DESC")
+    List<Chat> findAllByCharacterIdAndOwnerIdWithMessages(@Param("characterId") UUID characterId, @Param("ownerId") UUID ownerId);
 }

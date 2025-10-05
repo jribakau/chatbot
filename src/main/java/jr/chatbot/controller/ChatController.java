@@ -49,14 +49,14 @@ public class ChatController {
     public ResponseEntity<Chat> getLatestChat(
             @RequestParam UUID characterId,
             @RequestParam UUID ownerId) {
-        Chat chat = chatService.findLatestChatByCharacterAndOwner(characterId, ownerId)
+        Chat chat = chatService.findLatestChatByCharacterAndOwnerWithMessages(characterId, ownerId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No chat found"));
         return ResponseEntity.ok(chat);
     }
 
     @GetMapping("/chat/{id}")
     public ResponseEntity<Chat> getChatById(@PathVariable UUID id) {
-        Chat chat = chatService.findChatById(id)
+        Chat chat = chatService.findChatByIdWithMessages(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Chat not found"));
         return ResponseEntity.ok(chat);
     }
