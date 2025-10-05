@@ -11,6 +11,6 @@
 
     <app-chat-pane [activeCharacter]="activeCharacter" [messages]="messages" [isTyping]="isTyping" [draft]="draft"
         (draftChange)="draft = $event" (sendMessage)="onSendMessage($event)" (logout)="onLogout()"
-        (clearChat)="clearChat()" (settingsClicked)="toggleSettings()">
+        (clearChat)="clearChat()" (settingsClicked)="toggleSettings()" (editMessage)="onEditMessage($event)">
     </app-chat-pane>
 </div>

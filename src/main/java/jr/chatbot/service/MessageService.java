@@ -6,16 +6,20 @@ import jr.chatbot.dto.openrouter.OpenRouterChatResponse;
 import jr.chatbot.entity.Character;
 import jr.chatbot.entity.Message;
 import jr.chatbot.enums.MessageRoleEnum;
+import jr.chatbot.repository.MessageRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class MessageService {
@@ -33,8 +37,20 @@ public class MessageService {
 
     private final RestTemplate restTemplate;
 
+    @Autowired
+    private MessageRepository messageRepository;
+
     public MessageService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
+    }
+
+    public Message updateMessage(UUID id, Message updatedMessage) {
+        Message existingMessage = messageRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Message not found"));
+
+        existingMessage.setContent(updatedMessage.getContent());
+
+        return messageRepository.save(existingMessage);
     }
 
     public Message getAIResponse(Character character, List<Message> history, String userMessage) {

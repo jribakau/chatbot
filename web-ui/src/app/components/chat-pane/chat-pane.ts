@@ -23,8 +23,11 @@ export class ChatPane implements AfterViewChecked {
   @Output() logout = new EventEmitter<void>();
   @Output() clearChat = new EventEmitter<void>();
   @Output() settingsClicked = new EventEmitter<void>();
+  @Output() editMessage = new EventEmitter<Message>();
 
   private shouldScroll = false;
+  editingMessageId: string | null = null;
+  editContent = '';
 
   ngAfterViewChecked() {
     if (this.shouldScroll) {
@@ -64,6 +67,33 @@ export class ChatPane implements AfterViewChecked {
 
   onSettingsClicked() {
     this.settingsClicked.emit();
+  }
+
+  startEdit(message: Message) {
+    this.editingMessageId = message.id || null;
+    this.editContent = message.content;
+  }
+
+  cancelEdit() {
+    this.editingMessageId = null;
+    this.editContent = '';
+  }
+
+  saveEdit(message: Message) {
+    if (!this.editContent.trim()) return;
+
+    const updatedMessage: Message = {
+      ...message,
+      content: this.editContent.trim()
+    };
+
+    this.editMessage.emit(updatedMessage);
+    this.editingMessageId = null;
+    this.editContent = '';
+  }
+
+  isEditing(message: Message): boolean {
+    return this.editingMessageId === message.id;
   }
 
   private scrollToBottom() {

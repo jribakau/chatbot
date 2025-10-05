@@ -39,7 +39,8 @@ public class SecurityConfig {
                                 "/error"
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/characters/**", "/api/chat/**", "/api/message").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/chat", "/api/message").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/chat", "/api/message/**").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/api/message/**").permitAll()
                         .anyRequest().authenticated()
                 );
         return http.build();
