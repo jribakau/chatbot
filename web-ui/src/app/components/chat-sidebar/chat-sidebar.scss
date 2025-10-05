@@ -1,18 +1,18 @@
 .sidebar {
     background: #ffffffaa;
-    backdrop-filter: blur(8px);
-    border-right: 1px solid #eceaf5;
-    padding: 16px 12px;
+    backdrop-filter: var(--backdrop-blur);
+    border-right: 1px solid var(--border-light);
+    padding: var(--spacing-lg) var(--spacing-md);
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: var(--spacing-md);
 }
 
 .brand {
     font-weight: 800;
     letter-spacing: 0.5px;
     font-size: 1.1rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--gradient-primary);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -25,23 +25,23 @@
 }
 
 .new-chat-btn {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: #fff;
+    background: var(--gradient-primary);
+    color: white;
     border: none;
-    border-radius: 8px;
-    padding: 10px 12px;
+    border-radius: var(--radius-md);
+    padding: 10px var(--spacing-md);
     font-weight: 600;
     cursor: pointer;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 
-.new-chat-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 8px 18px rgba(102, 126, 234, .25);
-}
+    &:hover {
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-purple);
+    }
 
-.new-chat-btn:active {
-    transform: translateY(0);
+    &:active {
+        transform: translateY(0);
+    }
 }
 
 .conversation-list {
@@ -61,28 +61,17 @@
     align-items: center;
     gap: 10px;
     padding: 10px;
-    border-radius: 10px;
+    border-radius: var(--radius-lg);
     cursor: pointer;
     position: relative;
-}
 
-.conversation-item:hover {
-    background: #f3f1fb;
-}
+    &:hover {
+        background: var(--bg-purple-lighter);
+    }
 
-.conversation-item.active {
-    background: #ebe6ff;
-}
-
-.avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    display: grid;
-    place-items: center;
-    background: #f0eeff;
-    color: #6a5fb1;
-    font-weight: 700;
+    &.active {
+        background: #ebe6ff;
+    }
 }
 
 .meta .name {
@@ -91,7 +80,7 @@
 }
 
 .meta .last-message {
-    color: #777;
+    color: var(--text-muted);
     font-size: 0.8rem;
     white-space: nowrap;
     overflow: hidden;
@@ -102,56 +91,45 @@
     background: none;
     border: none;
     cursor: pointer;
-    padding: 4px;
+    padding: var(--spacing-xs);
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 4px;
-    color: #6a5fb1;
-    transition: all 0.2s ease;
+    border-radius: var(--spacing-xs);
+    color: var(--color-primary-light);
+    transition: all var(--transition-normal);
     opacity: 0.6;
-}
 
-.dropdown-toggle:hover {
-    opacity: 1;
-    background: #e5deff;
-}
+    &:hover {
+        opacity: 1;
+        background: var(--border-purple-light);
+    }
 
-.dropdown-toggle.expanded {
-    transform: rotate(180deg);
+    &.expanded {
+        transform: rotate(180deg);
+    }
 }
 
 .past-chats-list {
     list-style: none;
-    margin: 4px 0 8px 0;
+    margin: var(--spacing-xs) 0 var(--spacing-sm) 0;
     padding: 0 0 0 46px;
-    animation: slideDown 0.2s ease;
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    animation: slideDown var(--transition-normal);
 }
 
 .past-chat-item {
-    padding: 8px 10px;
+    padding: var(--spacing-sm) 10px;
     margin: 2px 0;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     cursor: pointer;
     background: #f9f8fc;
     border-left: 3px solid transparent;
-    transition: all 0.15s ease;
-}
+    transition: all var(--transition-fast);
 
-.past-chat-item:hover {
-    background: #f0eeff;
-    border-left-color: #667eea;
+    &:hover {
+        background: var(--bg-purple-light);
+        border-left-color: var(--color-primary);
+    }
 }
 
 .past-chat-meta {
@@ -162,7 +140,7 @@
 
 .past-chat-preview {
     font-size: 0.85rem;
-    color: #333;
+    color: var(--text-secondary);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -171,13 +149,13 @@
 
 .past-chat-date {
     font-size: 0.75rem;
-    color: #999;
+    color: var(--text-lighter);
 }
 
 .no-chats {
-    padding: 12px 10px;
+    padding: var(--spacing-md) 10px;
     text-align: center;
-    color: #999;
+    color: var(--text-lighter);
     font-size: 0.85rem;
     font-style: italic;
 }
