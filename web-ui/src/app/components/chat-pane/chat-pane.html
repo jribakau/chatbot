@@ -19,8 +19,20 @@
     <section class="messages" #messagesScroll>
         <div class="message" *ngFor="let m of messages" [ngClass]="m.role">
             <div class="bubble">
-                <div class="content">{{ m.content }}</div>
-                <div class="timestamp">{{ m.timestamp | date: 'shortTime' }}</div>
+                <div *ngIf="!isEditing(m)">
+                    <div class="content">{{ m.content }}</div>
+                    <div class="timestamp">{{ m.timestamp | date: 'shortTime' }}</div>
+                    <div class="message-actions">
+                        <button class="edit-btn" title="Edit message" (click)="startEdit(m)">✏️</button>
+                    </div>
+                </div>
+                <div *ngIf="isEditing(m)" class="edit-mode">
+                    <textarea [(ngModel)]="editContent" class="edit-textarea" rows="3"></textarea>
+                    <div class="edit-actions">
+                        <button class="save-btn" (click)="saveEdit(m)" [disabled]="!editContent.trim()">Save</button>
+                        <button class="cancel-btn" (click)="cancelEdit()">Cancel</button>
+                    </div>
+                </div>
             </div>
         </div>
 

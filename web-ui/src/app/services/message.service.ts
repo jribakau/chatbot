@@ -24,4 +24,8 @@ export class MessageService extends AbstractService<Message, MessageFilter> {
     return this.http.post<Message>(`${this.baseUrl}/message`, payload);
   }
 
+  updateMessage(message: Message): Observable<Message> {
+    return this.http.put<Message>(`${this.baseUrl}/message/${message.id}`, message);
+  }
+
 }

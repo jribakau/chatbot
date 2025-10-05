@@ -88,6 +88,11 @@
     line-height: 1.45;
     position: relative;
     box-shadow: 0 6px 16px rgba(0, 0, 0, .06);
+    transition: all 0.3s ease;
+}
+
+.bubble:hover .message-actions {
+    opacity: 1;
 }
 
 .USER .bubble {
@@ -102,10 +107,208 @@
     border-bottom-left-radius: 4px;
 }
 
+.content {
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
 .timestamp {
     opacity: .6;
     font-size: .75rem;
     margin-top: 6px;
+}
+
+.message-actions {
+    margin-top: 8px;
+    display: flex;
+    gap: 6px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.edit-btn {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 0.813rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    backdrop-filter: blur(10px);
+}
+
+.edit-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.edit-btn:active {
+    transform: translateY(0);
+}
+
+.ASSISTANT .edit-btn {
+    background: rgba(102, 126, 234, 0.08);
+    border: 1px solid rgba(102, 126, 234, 0.15);
+    color: #667eea;
+}
+
+.ASSISTANT .edit-btn:hover {
+    background: rgba(102, 126, 234, 0.15);
+    border-color: rgba(102, 126, 234, 0.25);
+}
+
+.edit-mode {
+    width: 100%;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.edit-textarea {
+    width: 100%;
+    border-radius: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    padding: 10px 12px;
+    font-size: 1rem;
+    outline: none;
+    resize: vertical;
+    min-height: 70px;
+    background: rgba(255, 255, 255, 0.1);
+    color: inherit;
+    font-family: inherit;
+    transition: all 0.25s ease;
+    backdrop-filter: blur(10px);
+}
+
+.USER .edit-textarea {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #fff;
+}
+
+.USER .edit-textarea::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.ASSISTANT .edit-textarea {
+    background: #fff;
+    border-color: #e6e3f3;
+    color: #1e1e1e;
+}
+
+.edit-textarea:focus {
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+    border-color: #b6a9ef;
+}
+
+.USER .edit-textarea:focus {
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.edit-actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.save-btn, .cancel-btn {
+    padding: 8px 16px;
+    border-radius: 10px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.save-btn {
+    background: #fff;
+    color: #764ba2;
+    box-shadow: 0 2px 8px rgba(118, 75, 162, 0.2);
+}
+
+.save-btn:hover:not(:disabled) {
+    background: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(118, 75, 162, 0.3);
+}
+
+.save-btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.save-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.cancel-btn {
+    background: rgba(255, 255, 255, 0.15);
+    color: inherit;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+}
+
+.cancel-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.cancel-btn:active {
+    transform: translateY(0);
+}
+
+.ASSISTANT .save-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.ASSISTANT .save-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #5568d3 0%, #6a3f91 100%);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.ASSISTANT .cancel-btn {
+    background: #fff;
+    color: #667eea;
+    border: 1px solid #e6e3f3;
+}
+
+.ASSISTANT .cancel-btn:hover {
+    background: #f7f7ff;
+    border-color: #b6a9ef;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
 }
 
 .typing {

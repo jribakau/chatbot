@@ -243,6 +243,26 @@ export class ChatLayout implements OnInit {
     });
   }
 
+  onEditMessage(updatedMessage: Message) {
+    this.messageService.updateMessage(updatedMessage).subscribe({
+      next: (savedMessage) => {
+        const index = this.messages.findIndex(m => m.id === savedMessage.id);
+        if (index !== -1) {
+          this.messages[index] = savedMessage;
+
+          if (this.selectedCharacterId) {
+            this.messagesByCharacter[this.selectedCharacterId] = this.messages;
+          }
+        }
+        console.debug('Message updated successfully', savedMessage);
+      },
+      error: (err) => {
+        console.error('Failed to update message', err);
+        alert('Failed to update message. Please try again.');
+      }
+    });
+  }
+
   private buildGreeting(): Message | null {
     const ch = this.activeCharacter;
     if (!ch) return null;
@@ -250,4 +270,3 @@ export class ChatLayout implements OnInit {
     return { role: MessageRoleEnum.ASSISTANT, content: text, timestamp: new Date() };
   }
 }
-
