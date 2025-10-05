@@ -36,6 +36,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/users/login",
                                 "/api/users/logout",
+                                "/api/users/register",
                                 "/error"
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/characters/**", "/api/chat/**", "/api/message").permitAll()
