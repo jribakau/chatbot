@@ -1,14 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { Character } from '../../models/character';
 import { CharacterService } from '../../services/character.service';
 
 @Component({
     selector: 'app-character',
     standalone: true,
-    imports: [CommonModule, FormsModule, RouterLink],
+    imports: [CommonModule, FormsModule],
     templateUrl: './character.html',
     styleUrls: ['./character.scss']
 })
