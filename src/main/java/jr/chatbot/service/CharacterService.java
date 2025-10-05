@@ -25,6 +25,9 @@ public class CharacterService {
     }
 
     public List<Character> getAllCharacters() {
+        if (SecurityUtil.isCurrentUserAdmin()) {
+            return characterRepository.findByResourceStatus(ResourceStatusEnum.ACTIVE);
+        }
         UUID currentUserId = SecurityUtil.getCurrentUserId();
         return characterRepository.findByResourceStatusAndOwnerId(ResourceStatusEnum.ACTIVE, currentUserId);
     }

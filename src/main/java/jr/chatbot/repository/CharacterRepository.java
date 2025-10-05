@@ -13,4 +13,5 @@ import java.util.UUID;
 public interface CharacterRepository extends JpaRepository<Character, UUID> {
     Optional<Character> findByName(String name);
     List<Character> findByResourceStatus(ResourceStatusEnum resourceStatus);
+    List<Character> findByResourceStatusAndOwnerId(ResourceStatusEnum resourceStatus, UUID ownerId);
 }
