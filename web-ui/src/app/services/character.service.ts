@@ -26,4 +26,8 @@ export class CharacterService extends AbstractService<Character, CharacterFilter
     return this.http.post<Character>(`${this.baseUrl}/characters`, character);
   }
 
+  deleteCharacter(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/characters/${id}`);
+  }
+
 }

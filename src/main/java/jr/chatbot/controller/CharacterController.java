@@ -34,4 +34,13 @@ public class CharacterController {
         Character savedCharacter = characterService.saveCharacter(character);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedCharacter);
     }
+
+    @DeleteMapping("/characters/{id}")
+    public ResponseEntity<Void> deleteCharacter(@PathVariable UUID id) {
+        boolean deleted = characterService.deleteCharacter(id);
+        if (deleted) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
 }

@@ -1,6 +1,7 @@
 package jr.chatbot.util;
 
 import jr.chatbot.entity.User;
+import jr.chatbot.enums.UserRoleEnum;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -30,6 +31,11 @@ public class SecurityUtil {
     public static boolean isOwner(UUID ownerId) {
         UUID currentUserId = getCurrentUserId();
         return currentUserId != null && currentUserId.equals(ownerId);
+    }
+
+    public static boolean isCurrentUserAdmin() {
+        User user = getCurrentUser();
+        return user != null && UserRoleEnum.ADMIN.equals(user.getRole());
     }
 }
 

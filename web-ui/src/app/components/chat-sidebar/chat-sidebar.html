@@ -2,6 +2,7 @@
     <div class="brand">Chatbot</div>
     <div class="conversations-header">
         <button class="new-chat-btn" (click)="onNewChat()" [disabled]="!selectedCharacterId">+ New Chat</button>
+        <button class="new-chat-btn" (click)="onNewCharacter()">+ New Character</button>
     </div>
     <ul class="conversation-list">
         <li *ngFor="let ch of characters" class="conversation-wrapper">

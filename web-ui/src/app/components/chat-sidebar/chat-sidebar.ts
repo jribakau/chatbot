@@ -14,6 +14,7 @@ export class ChatSidebar {
   @Input() selectedCharacterId: string | null = null;
   @Input() pastChatsByCharacter: Record<string, Chat[]> = {};
   @Output() characterSelected = new EventEmitter<string>();
+  @Output() newCharacter = new EventEmitter<void>();
   @Output() newChatClicked = new EventEmitter<void>();
   @Output() pastChatSelected = new EventEmitter<Chat>();
   @Output() loadPastChats = new EventEmitter<string>();
@@ -28,6 +29,10 @@ export class ChatSidebar {
 
   onNewChat() {
     this.newChatClicked.emit();
+  }
+
+  onNewCharacter() {
+    this.newCharacter.emit();
   }
 
   togglePastChats(event: Event, characterId: string | undefined | null) {

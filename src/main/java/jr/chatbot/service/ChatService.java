@@ -1,5 +1,6 @@
 package jr.chatbot.service;
 
+import jakarta.transaction.Transactional;
 import jr.chatbot.entity.Chat;
 import jr.chatbot.entity.Message;
 import jr.chatbot.repository.ChatRepository;
@@ -53,5 +54,14 @@ public class ChatService {
         chat.getMessageList().add(message);
 
         chatRepository.save(chat);
+    }
+
+    @Transactional
+    public int softDeleteChatsByCharacterId(UUID characterId) {
+        return chatRepository.bulkUpdateResourceStatusByCharacterId(characterId, jr.chatbot.enums.ResourceStatusEnum.DELETED);
+    }
+
+    public List<Chat> findAllChatsByCharacterId(UUID characterId) {
+        return chatRepository.findByCharacterId(characterId);
     }
 }
