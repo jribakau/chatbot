@@ -13,5 +13,7 @@
             (draftChange)="draft = $event" (sendMessage)="onSendMessage($event)" (clearChat)="clearChat()"
             (editMessage)="onEditMessage($event)">
         </app-chat-pane>
+
+        <app-character-info [character]="activeCharacter"></app-character-info>
     </div>
 </div>

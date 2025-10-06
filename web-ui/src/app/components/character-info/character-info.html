@@ -1,0 +1,70 @@
+@if (character) {
+<div class="character-info-panel">
+  <div class="character-header">
+    <div class="character-avatar">
+      @if (character.customFields?.['photoUrl']) {
+      <img [src]="character.customFields?.['photoUrl']" [alt]="character.name" class="avatar-image" />
+      } @else {
+      <div class="avatar-placeholder">
+        <span class="avatar-initials">{{ getInitials(character.name) }}</span>
+      </div>
+      }
+    </div>
+    <h2 class="character-name">{{ character.name }}</h2>
+  </div>
+
+  <div class="character-details">
+    @if (character.description) {
+    <div class="detail-section">
+      <h3 class="section-title">About</h3>
+      <p class="section-content">{{ character.description }}</p>
+    </div>
+    }
+
+    @if (character.shortGreeting) {
+    <div class="detail-section">
+      <h3 class="section-title">Greeting</h3>
+      <p class="section-content greeting">{{ character.shortGreeting }}</p>
+    </div>
+    }
+
+    @if (character.systemPrompt) {
+    <div class="detail-section">
+      <h3 class="section-title">Personality</h3>
+      <p class="section-content">{{ character.systemPrompt }}</p>
+    </div>
+    }
+
+    @if (hasCustomFields()) {
+    <div class="detail-section">
+      <h3 class="section-title">Additional Info</h3>
+      <div class="custom-fields">
+        @for (field of getCustomFieldEntries(); track field.key) {
+        @if (field.key !== 'photoUrl') {
+        <div class="custom-field">
+          <span class="field-label">{{ formatFieldName(field.key) }}:</span>
+          <span class="field-value">{{ field.value }}</span>
+        </div>
+        }
+        }
+      </div>
+    </div>
+    }
+
+    <div class="detail-section metadata">
+      @if (character.createdAt) {
+      <div class="metadata-item">
+        <span class="metadata-label">Created:</span>
+        <span class="metadata-value">{{ formatDate(character.createdAt) }}</span>
+      </div>
+      }
+      @if (character.updatedAt) {
+      <div class="metadata-item">
+        <span class="metadata-label">Updated:</span>
+        <span class="metadata-value">{{ formatDate(character.updatedAt) }}</span>
+      </div>
+      }
+    </div>
+  </div>
+</div>
+}
