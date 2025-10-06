@@ -9,13 +9,14 @@ import { ChatService } from '../../services/chat.service';
 import { JwtService } from '../../services/jwt.service';
 import { MessageService } from '../../services/message.service';
 import { UserService } from '../../services/user.service';
+import { CharacterInfo } from '../character-info/character-info';
 import { ChatPane } from '../chat-pane/chat-pane';
 import { ChatSidebar } from '../chat-sidebar/chat-sidebar';
 import { NavbarComponent } from '../navbar/navbar';
 
 @Component({
   selector: 'app-chat-layout',
-  imports: [ChatSidebar, ChatPane, NavbarComponent],
+  imports: [ChatSidebar, ChatPane, NavbarComponent, CharacterInfo],
   templateUrl: './chat-layout.html',
   styleUrl: './chat-layout.scss'
 })

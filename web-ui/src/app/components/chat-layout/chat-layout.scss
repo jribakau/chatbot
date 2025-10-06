@@ -9,13 +9,27 @@
 
 .chat-content {
   display: grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: 280px 1fr 320px;
   flex: 1;
   overflow: hidden;
+}
+
+@media (max-width: 1200px) {
+  .chat-content {
+    grid-template-columns: 280px 1fr;
+
+    app-character-info {
+      display: none;
+    }
+  }
 }
 
 @media (max-width: 900px) {
   .chat-content {
     grid-template-columns: 1fr;
+
+    app-character-info {
+      display: none;
+    }
   }
 }
