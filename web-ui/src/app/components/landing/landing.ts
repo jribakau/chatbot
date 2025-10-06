@@ -1,4 +1,4 @@
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser } from '@angular/common';
 import { Component, OnInit, PLATFORM_ID, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { JwtService } from '../../services/jwt.service';
@@ -6,7 +6,7 @@ import { JwtService } from '../../services/jwt.service';
 @Component({
     selector: 'app-landing',
     standalone: true,
-    imports: [CommonModule],
+    imports: [],
     templateUrl: './landing.html',
     styleUrls: ['./landing.scss']
 })
