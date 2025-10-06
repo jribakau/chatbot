@@ -6,10 +6,9 @@ import jr.chatbot.dto.LoginResponse;
 import jr.chatbot.dto.RegisterRequest;
 import jr.chatbot.dto.RegisterResponse;
 import jr.chatbot.entity.User;
-import jr.chatbot.service.TokenService;
+import jr.chatbot.service.JwtService;
 import jr.chatbot.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,7 +26,7 @@ public class UserController {
     private UserService userService;
 
     @Autowired
-    private TokenService tokenService;
+    private JwtService jwtService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -40,21 +39,13 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }
 
-        var userOpt = (request.getUsername() != null && !request.getUsername().isBlank())
-                ? userService.findByUsername(request.getUsername())
-                : userService.findByEmail(request.getEmail());
+        var userOpt = (request.getUsername() != null && !request.getUsername().isBlank()) ? userService.findByUsername(request.getUsername()) : userService.findByEmail(request.getEmail());
 
         if (userOpt.isPresent()) {
             User user = userOpt.get();
             if (passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
-                String token = tokenService.issueToken(user);
-                LoginResponse response = new LoginResponse(
-                        token,
-                        user.getId(),
-                        user.getUsername(),
-                        user.getEmail(),
-                        user.getRole().name()
-                );
+                String token = jwtService.generateToken(user);
+                LoginResponse response = new LoginResponse(token, user.getId(), user.getUsername(), user.getEmail(), user.getRole().name());
                 return ResponseEntity.ok(response);
             }
         }
@@ -65,16 +56,6 @@ public class UserController {
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request, @RequestBody(required = false) Map<String, String> body) {
-        var authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        String token = null;
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            token = authHeader.substring(7);
-        } else if (body != null) {
-            token = body.get("token");
-        }
-        if (token != null) {
-            tokenService.revokeToken(token);
-        }
         return ResponseEntity.ok(Map.of("status", "logged out"));
     }
 
@@ -97,17 +78,8 @@ public class UserController {
         }
 
         try {
-            User user = userService.registerUser(
-                request.getUsername(),
-                request.getEmail(),
-                request.getPassword()
-            );
-            RegisterResponse response = new RegisterResponse(
-                user.getId(),
-                user.getUsername(),
-                user.getEmail(),
-                "User registered successfully"
-            );
+            User user = userService.registerUser(request.getUsername(), request.getEmail(), request.getPassword());
+            RegisterResponse response = new RegisterResponse(user.getId(), user.getUsername(), user.getEmail(), "User registered successfully");
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (RuntimeException e) {
             var error = new HashMap<>();
