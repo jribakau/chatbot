@@ -1,14 +1,21 @@
 .chat-container {
-  display: grid;
-  grid-template-columns: 280px 1fr;
+  display: flex;
+  flex-direction: column;
   height: 100vh;
   background: var(--bg-gradient-light);
   color: var(--text-primary);
   font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
 }
 
+.chat-content {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  flex: 1;
+  overflow: hidden;
+}
+
 @media (max-width: 900px) {
-  .chat-container {
+  .chat-content {
     grid-template-columns: 1fr;
   }
 }

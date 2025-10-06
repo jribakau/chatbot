@@ -6,15 +6,16 @@ import { Chat } from '../../models/chat';
 import { Message } from '../../models/message';
 import { CharacterService } from '../../services/character.service';
 import { ChatService } from '../../services/chat.service';
+import { JwtService } from '../../services/jwt.service';
 import { MessageService } from '../../services/message.service';
 import { UserService } from '../../services/user.service';
-import { JwtService } from '../../services/jwt.service';
 import { ChatPane } from '../chat-pane/chat-pane';
 import { ChatSidebar } from '../chat-sidebar/chat-sidebar';
+import { NavbarComponent } from '../navbar/navbar';
 
 @Component({
   selector: 'app-chat-layout',
-  imports: [ChatSidebar, ChatPane],
+  imports: [ChatSidebar, ChatPane, NavbarComponent],
   templateUrl: './chat-layout.html',
   styleUrl: './chat-layout.scss'
 })
@@ -60,6 +61,10 @@ export class ChatLayout implements OnInit {
 
   get activeCharacter(): Character | undefined {
     return this.characters.find(c => c.id === this.selectedCharacterId);
+  }
+
+  get currentUsername(): string | null {
+    return this.jwtService.getUsername();
   }
 
   createNewCharacter() {

@@ -20,9 +20,7 @@ export class ChatPane implements AfterViewChecked {
 
   @Output() draftChange = new EventEmitter<string>();
   @Output() sendMessage = new EventEmitter<string>();
-  @Output() logout = new EventEmitter<void>();
   @Output() clearChat = new EventEmitter<void>();
-  @Output() settingsClicked = new EventEmitter<void>();
   @Output() editMessage = new EventEmitter<Message>();
 
   private shouldScroll = false;
@@ -57,16 +55,8 @@ export class ChatPane implements AfterViewChecked {
     this.shouldScroll = true;
   }
 
-  onLogout() {
-    this.logout.emit();
-  }
-
   onClearChat() {
     this.clearChat.emit();
-  }
-
-  onSettingsClicked() {
-    this.settingsClicked.emit();
   }
 
   startEdit(message: Message) {

@@ -28,17 +28,6 @@
     font-size: 0.85rem;
 }
 
-.actions {
-    display: flex;
-    gap: var(--spacing-sm);
-}
-
-.icon-btn {
-    &:hover {
-        background: var(--bg-purple-lightest);
-    }
-}
-
 .avatar.large {
     width: 40px;
     height: 40px;
@@ -199,7 +188,8 @@
     animation: slideUp var(--transition-slow);
 }
 
-.save-btn, .cancel-btn {
+.save-btn,
+.cancel-btn {
     padding: var(--spacing-sm) var(--spacing-lg);
     border-radius: var(--radius-lg);
     border: none;
