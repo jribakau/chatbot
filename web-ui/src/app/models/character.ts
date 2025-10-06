@@ -5,4 +5,5 @@ export interface Character extends Resource {
   description?: string;
   systemPrompt?: string;
   shortGreeting?: string;
+  customFields?: { [key: string]: string };
 }

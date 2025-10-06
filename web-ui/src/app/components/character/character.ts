@@ -19,6 +19,10 @@ export class CharacterComponent implements OnInit {
     isEditing: boolean = false;
     loading: boolean = false;
 
+    customFieldsArray: { key: string, value: string }[] = [];
+    newFieldKey: string = '';
+    newFieldValue: string = '';
+
     constructor(
         private characterService: CharacterService,
         private router: Router
@@ -49,7 +53,8 @@ export class CharacterComponent implements OnInit {
     }
 
     startCreate() {
-        this.newCharacter = {};
+        this.newCharacter = { customFields: {} };
+        this.customFieldsArray = [];
         this.isCreating = true;
         this.isEditing = false;
         this.selectedCharacter = null;
@@ -62,6 +67,15 @@ export class CharacterComponent implements OnInit {
     startEdit(character: Character) {
         this.selectedCharacter = character;
         this.newCharacter = { ...character };
+
+        this.customFieldsArray = [];
+        if (character.customFields) {
+            this.customFieldsArray = Object.entries(character.customFields).map(([key, value]) => ({
+                key,
+                value
+            }));
+        }
+
         this.isEditing = true;
         this.isCreating = false;
     }
@@ -70,22 +84,67 @@ export class CharacterComponent implements OnInit {
         this.isCreating = false;
         this.isEditing = false;
         this.newCharacter = {};
+        this.customFieldsArray = [];
         this.selectedCharacter = null;
     }
 
+    addCustomField() {
+        if (this.newFieldKey.trim()) {
+            this.customFieldsArray.push({
+                key: this.newFieldKey.trim(),
+                value: this.newFieldValue.trim()
+            });
+            this.newFieldKey = '';
+            this.newFieldValue = '';
+        }
+    }
+
+    removeCustomField(index: number) {
+        this.customFieldsArray.splice(index, 1);
+    }
+
     onCreate() {
-        this.characterService.createCharacter(this.newCharacter).subscribe(
-            (character: Character) => {
-                console.log('Character created successfully', character);
-                this.characters.push(character);
-                this.isCreating = false;
-                this.newCharacter = {};
-                this.selectedCharacter = character;
-            },
-            (error: any) => {
-                console.error('Failed to create character', error);
-            }
-        );
+        if (this.customFieldsArray.length > 0) {
+            this.newCharacter.customFields = {};
+            this.customFieldsArray.forEach(field => {
+                if (field.key.trim()) {
+                    this.newCharacter.customFields![field.key] = field.value;
+                }
+            });
+        }
+
+        if (this.isEditing && this.selectedCharacter?.id) {
+            this.characterService.updateCharacter(this.selectedCharacter.id, this.newCharacter).subscribe(
+                (character: Character) => {
+                    console.log('Character updated successfully', character);
+                    const index = this.characters.findIndex(c => c.id === character.id);
+                    if (index !== -1) {
+                        this.characters[index] = character;
+                    }
+                    this.isEditing = false;
+                    this.newCharacter = {};
+                    this.customFieldsArray = [];
+                    this.selectedCharacter = character;
+                },
+                (error: any) => {
+                    console.error('Failed to update character', error);
+                }
+            );
+        } else {
+            this.characterService.createCharacter(this.newCharacter).subscribe(
+                (character: Character) => {
+                    console.log('Character created successfully', character);
+                    this.characters.push(character);
+                    this.isCreating = false;
+                    this.newCharacter = {};
+                    this.customFieldsArray = [];
+                    this.selectedCharacter = character;
+                },
+                (error: any) => {
+                    console.error('Failed to create character', error);
+                }
+            );
+        }
     }
 
     onDelete(characterId: string) {
@@ -105,5 +164,10 @@ export class CharacterComponent implements OnInit {
                 }
             );
         }
+    }
+
+    getCustomFieldsArray(customFields?: { [key: string]: string }): { key: string, value: string }[] {
+        if (!customFields) return [];
+        return Object.entries(customFields).map(([key, value]) => ({ key, value }));
     }
 }

@@ -51,8 +51,7 @@ public class MessageService {
     }
 
     public Message updateMessage(UUID id, Message updatedMessage) {
-        Message existingMessage = messageRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Message not found"));
+        Message existingMessage = messageRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Message not found"));
 
         existingMessage.setContent(updatedMessage.getContent());
 
@@ -91,8 +90,8 @@ public class MessageService {
 
     private List<OpenAIMessage> buildMessages(Character character, List<Message> history, String userMessage) {
         var messages = new ArrayList<OpenAIMessage>();
-        var systemPrompt = character != null ? character.getSystemPrompt() : null;
-        messages.add(new OpenAIMessage("system", systemPrompt != null ? systemPrompt : ""));
+        var systemPrompt = buildEnhancedSystemPrompt(character);
+        messages.add(new OpenAIMessage("system", systemPrompt));
 
         if (history != null && !history.isEmpty()) {
             for (var msg : history) {
@@ -103,6 +102,30 @@ public class MessageService {
 
         messages.add(new OpenAIMessage("user", userMessage));
         return messages;
+    }
+
+    private String buildEnhancedSystemPrompt(Character character) {
+        if (character == null) {
+            return "";
+        }
+
+        StringBuilder prompt = new StringBuilder();
+
+        if (character.getSystemPrompt() != null && !character.getSystemPrompt().isBlank()) {
+            prompt.append(character.getSystemPrompt());
+        }
+
+        if (character.getCustomFields() != null && !character.getCustomFields().isEmpty()) {
+            if (!prompt.isEmpty()) {
+                prompt.append("\n\n");
+            }
+            prompt.append("Character Details:\n");
+            character.getCustomFields().forEach((key, value) -> {
+                prompt.append("- ").append(key).append(": ").append(value).append("\n");
+            });
+        }
+
+        return prompt.toString();
     }
 
     private HttpHeaders buildHeaders() {

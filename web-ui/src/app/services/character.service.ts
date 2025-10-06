@@ -1,10 +1,10 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { Character } from "../models/character";
-import { AbstractService } from "./abstract.service";
-import { CharacterFilter } from "../models/characterFilter";
 import { environment } from "../../environments/environment";
+import { Character } from "../models/character";
+import { CharacterFilter } from "../models/characterFilter";
+import { AbstractService } from "./abstract.service";
 
 @Injectable({ providedIn: 'root' })
 export class CharacterService extends AbstractService<Character, CharacterFilter> {
@@ -24,6 +24,10 @@ export class CharacterService extends AbstractService<Character, CharacterFilter
 
   createCharacter(character: Partial<Character>): Observable<Character> {
     return this.http.post<Character>(`${this.baseUrl}/characters`, character);
+  }
+
+  updateCharacter(id: string, character: Partial<Character>): Observable<Character> {
+    return this.http.put<Character>(`${this.baseUrl}/characters/${id}`, character);
   }
 
   deleteCharacter(id: string): Observable<void> {
