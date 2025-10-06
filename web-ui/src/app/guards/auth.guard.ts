@@ -1,19 +1,16 @@
-import { inject, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { CanActivateFn } from '@angular/router';
+import { JwtService } from '../services/jwt.service';
 
 export const authGuard: CanActivateFn = (route, state) => {
   const router = inject(Router);
-  const platformId = inject(PLATFORM_ID);
-  const isBrowser = isPlatformBrowser(platformId);
+  const jwtService = inject(JwtService);
 
-  const token = isBrowser
-    ? localStorage.getItem('authToken') || sessionStorage.getItem('authToken')
-    : null;
+  const token = jwtService.getToken();
 
-  if (token) {
+  if (token && !jwtService.isTokenExpired()) {
     return true;
-  } 
+  }
   return router.createUrlTree(['/login']);
 };
