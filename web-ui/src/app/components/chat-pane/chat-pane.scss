@@ -76,23 +76,7 @@
     padding: var(--spacing-xl) var(--spacing-xl) calc(var(--spacing-xl) + 80px) var(--spacing-xl);
     background: linear-gradient(180deg, rgba(247, 248, 255, 0.5), rgba(255, 255, 255, 0.95));
     scroll-behavior: smooth;
-
-    &::-webkit-scrollbar {
-        width: 8px;
-    }
-
-    &::-webkit-scrollbar-track {
-        background: transparent;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        background: rgba(102, 126, 234, 0.2);
-        border-radius: 4px;
-
-        &:hover {
-            background: rgba(102, 126, 234, 0.3);
-        }
-    }
+    @include custom-scrollbar-md;
 }
 
 .message {

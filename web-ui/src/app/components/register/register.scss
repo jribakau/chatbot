@@ -1,30 +1,11 @@
 @use '../../../styles.scss' as *;
 
 .register-container {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	min-height: 100vh;
-	background: var(--gradient-primary);
-	position: relative;
-	overflow: hidden;
-	padding: var(--spacing-xl);
+	@include auth-container;
 }
 
 .register-card {
-	background: white;
-	padding: 3rem 2.5rem;
-	border-radius: var(--radius-2xl);
-	box-shadow: var(--shadow-lg);
-	max-width: 440px;
-	width: 100%;
-	position: relative;
-	z-index: 10;
-	animation: slideUp 0.6s ease-out;
-
-	@media (max-width: 480px) {
-		padding: 2rem 1.5rem;
-	}
+	@include auth-card;
 }
 
 .register-header {
@@ -33,20 +14,9 @@
 }
 
 .logo-icon {
-	width: 56px;
-	height: 56px;
-	margin: 0 auto 1.5rem;
-	background: var(--gradient-primary);
-	border-radius: var(--radius-xl);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	box-shadow: var(--shadow-purple-lg);
-	animation: scaleIn 0.6s ease-out 0.2s both;
+	@include auth-logo-icon;
 
 	svg {
-		width: 28px;
-		height: 28px;
 		color: white;
 	}
 }
@@ -105,31 +75,16 @@
 }
 
 .input-field {
-	width: 100%;
-	padding: 0.875rem 1rem 0.875rem 3rem;
-	border: 2px solid var(--border-color);
-	border-radius: var(--radius-lg);
-	font-size: 0.9375rem;
-	color: var(--text-primary);
-	transition: all var(--transition-normal);
-	background: white;
-
-	&::placeholder {
-		color: var(--text-lighter);
-	}
+	@include auth-input-field;
 
 	&:focus {
-		outline: none;
-		border-color: var(--primary);
-		box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
-
 		&~.input-icon {
-			color: var(--primary);
+			color: var(--color-primary);
 		}
 	}
 
 	&:hover:not(:focus) {
-		border-color: var(--border-hover);
+		border-color: var(--border-lighter);
 	}
 }
 
@@ -171,47 +126,16 @@
 }
 
 .register-button {
-	width: 100%;
-	padding: 1rem 1.5rem;
-	background: var(--gradient-primary);
-	color: white;
-	border: none;
-	border-radius: var(--radius-lg);
-	font-size: 1rem;
-	font-weight: 600;
-	cursor: pointer;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 0.5rem;
-	transition: all var(--transition-normal);
-	box-shadow: var(--shadow-purple-md);
-	margin-top: 1.5rem;
+	@include auth-submit-button;
+	margin-top: 0.5rem;
+}
 
-	.button-icon {
-		width: 20px;
-		height: 20px;
-		transition: transform var(--transition-normal);
-	}
-
-	&:hover:not(:disabled) {
-		transform: translateY(-2px);
-		box-shadow: var(--shadow-purple-lg);
-
-		.button-icon {
-			transform: translateX(4px);
-		}
-	}
-
-	&:active:not(:disabled) {
-		transform: translateY(0);
-		box-shadow: var(--shadow-purple-md);
-	}
-
-	&:disabled {
-		opacity: 0.6;
-		cursor: not-allowed;
-	}
+.button-icon {
+	width: 20px;
+	height: 20px;
+	transition: transform var(--transition-normal);
+	position: relative;
+	z-index: 1;
 }
 
 .register-footer {
@@ -275,57 +199,5 @@
 		left: 50%;
 		transform: translate(-50%, -50%);
 		animation-delay: 10s;
-	}
-}
-
-@keyframes slideUp {
-	from {
-		opacity: 0;
-		transform: translateY(30px);
-	}
-
-	to {
-		opacity: 1;
-		transform: translateY(0);
-	}
-}
-
-@keyframes scaleIn {
-	from {
-		opacity: 0;
-		transform: scale(0.8);
-	}
-
-	to {
-		opacity: 1;
-		transform: scale(1);
-	}
-}
-
-@keyframes fadeInUp {
-	from {
-		opacity: 0;
-		transform: translateY(10px);
-	}
-
-	to {
-		opacity: 1;
-		transform: translateY(0);
-	}
-}
-
-@keyframes float {
-
-	0%,
-	100% {
-		transform: translate(0, 0) scale(1);
-	}
-
-	33% {
-		transform: translate(30px, -30px) scale(1.1);
-	}
-
-	66% {
-		transform: translate(-20px, 20px) scale(0.9);
 	}
 }
