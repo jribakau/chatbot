@@ -45,9 +45,7 @@ public class ChatController {
     }
 
     @GetMapping("/chat")
-    public ResponseEntity<List<Chat>> getChatsByCharacter(
-            @RequestParam UUID characterId,
-            @RequestParam(required = false) UUID ownerId) {
+    public ResponseEntity<List<Chat>> getChatsByCharacter(@RequestParam UUID characterId, @RequestParam(required = false) UUID ownerId) {
         UUID currentUserId = SecurityUtil.getCurrentUserId();
         if (currentUserId == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
@@ -58,16 +56,13 @@ public class ChatController {
     }
 
     @GetMapping("/chat/latest")
-    public ResponseEntity<Chat> getLatestChat(
-            @RequestParam UUID characterId,
-            @RequestParam(required = false) UUID ownerId) {
+    public ResponseEntity<Chat> getLatestChat(@RequestParam UUID characterId, @RequestParam(required = false) UUID ownerId) {
         UUID currentUserId = SecurityUtil.getCurrentUserId();
         if (currentUserId == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
         }
 
-        Chat chat = chatService.findLatestChatByCharacterAndOwnerWithMessages(characterId, currentUserId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No chat found"));
+        Chat chat = chatService.findLatestChatByCharacterAndOwnerWithMessages(characterId, currentUserId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No chat found"));
         return ResponseEntity.ok(chat);
     }
 
@@ -78,8 +73,7 @@ public class ChatController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
         }
 
-        Chat chat = chatService.findChatByIdWithMessages(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Chat not found"));
+        Chat chat = chatService.findChatByIdWithMessages(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Chat not found"));
 
         if (!chat.getOwnerId().equals(currentUserId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied");

@@ -2,8 +2,12 @@ package jr.chatbot.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UuidGenerator;
+import org.hibernate.type.SqlTypes;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
@@ -27,4 +31,8 @@ public class Character extends Resource {
     private String systemPrompt;
 
     private String shortGreeting;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb")
+    private Map<String, String> customFields = new HashMap<>();
 }

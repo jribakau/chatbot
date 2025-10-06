@@ -35,6 +35,17 @@ public class CharacterController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedCharacter);
     }
 
+    @PutMapping("/characters/{id}")
+    public ResponseEntity<Character> updateCharacter(@PathVariable UUID id, @RequestBody Character character) {
+        return characterService.getCharacterById(id)
+                .map(existingCharacter -> {
+                    character.setId(id);
+                    Character updatedCharacter = characterService.saveCharacter(character);
+                    return ResponseEntity.ok(updatedCharacter);
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @DeleteMapping("/characters/{id}")
     public ResponseEntity<Void> deleteCharacter(@PathVariable UUID id) {
         boolean deleted = characterService.deleteCharacter(id);
