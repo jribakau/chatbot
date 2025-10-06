@@ -1,19 +1,26 @@
-<div class="chat-container">
-    <app-navbar [userName]="currentUsername || undefined" (logout)="onLogout()" (settings)="toggleSettings()">
+<div class="chat-layout">
+    <!-- Top Navigation Bar -->
+    <app-navbar class="layout-navbar" [userName]="currentUsername || undefined" (logout)="onLogout()"
+        (settings)="toggleSettings()">
     </app-navbar>
 
-    <div class="chat-content">
-        <app-chat-sidebar [characters]="characters" [selectedCharacterId]="selectedCharacterId"
+    <!-- Three-Column Content Area: Sidebar | Chat | Info -->
+    <div class="layout-content">
+        <!-- Left: Character & Chat List -->
+        <app-chat-sidebar class="layout-sidebar" [characters]="characters" [selectedCharacterId]="selectedCharacterId"
             [pastChatsByCharacter]="pastChatsByCharacter" (characterSelected)="selectCharacter($event)"
             (newChatClicked)="startNewChat()" (newCharacter)="createNewCharacter()"
             (loadPastChats)="onLoadPastChats($event)" (pastChatSelected)="onSelectPastChat($event)">
         </app-chat-sidebar>
 
-        <app-chat-pane [activeCharacter]="activeCharacter" [messages]="messages" [isTyping]="isTyping" [draft]="draft"
-            (draftChange)="draft = $event" (sendMessage)="onSendMessage($event)" (clearChat)="clearChat()"
-            (editMessage)="onEditMessage($event)">
+        <!-- Center: Active Chat Messages -->
+        <app-chat-pane class="layout-chat" [activeCharacter]="activeCharacter" [messages]="messages"
+            [isTyping]="isTyping" [draft]="draft" (draftChange)="draft = $event" (sendMessage)="onSendMessage($event)"
+            (clearChat)="clearChat()" (editMessage)="onEditMessage($event)">
         </app-chat-pane>
 
-        <app-character-info [character]="activeCharacter"></app-character-info>
+        <!-- Right: Character Details -->
+        <app-character-info class="layout-info" [character]="activeCharacter">
+        </app-character-info>
     </div>
 </div>

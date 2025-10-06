@@ -1,35 +1,109 @@
-.chat-container {
+// ============================================================================
+// Main Layout Container
+// ============================================================================
+.chat-layout {
   display: flex;
   flex-direction: column;
   height: 100vh;
   background: var(--bg-gradient-light);
   color: var(--text-primary);
   font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  overflow: hidden; // Establish scroll containment - each child manages its own scrollable content
 }
 
-.chat-content {
+// ============================================================================
+// Layout Sections - Named for Clarity
+// ============================================================================
+
+// Top navigation bar - fixed height
+.layout-navbar {
+  flex-shrink: 0; // Don't compress
+  height: 64px;
+  z-index: 200; // Above all content
+}
+
+// Main content area - three column grid
+.layout-content {
+  flex: 1; // Fill remaining vertical space
   display: grid;
-  grid-template-columns: 280px 1fr 320px;
-  flex: 1;
-  overflow: hidden;
+  grid-template-columns:
+    300px // Sidebar - fixed width
+    1fr // Chat - flexible, takes remaining space
+    340px; // Info panel - fixed width
+  grid-template-areas: "sidebar chat info";
+  gap: 0;
+  overflow: hidden; // Children manage their own scrolling
+  position: relative;
 }
 
-@media (max-width: 1200px) {
-  .chat-content {
-    grid-template-columns: 280px 1fr;
+// ============================================================================
+// Layout Children - Explicit Grid Placement
+// ============================================================================
 
-    app-character-info {
-      display: none;
-    }
+.layout-sidebar {
+  grid-area: sidebar;
+  overflow: hidden; // Component handles internal scrolling
+}
+
+.layout-chat {
+  grid-area: chat;
+  overflow: hidden; // Component handles internal scrolling
+}
+
+.layout-info {
+  grid-area: info;
+  overflow: hidden; // Component handles internal scrolling
+}
+
+// ============================================================================
+// Responsive Breakpoints
+// ============================================================================
+
+// Tablet (≤1200px): Hide info panel, expand chat
+@media (max-width: 1200px) {
+  .layout-content {
+    grid-template-columns: 280px 1fr;
+    grid-template-areas: "sidebar chat";
+  }
+
+  .layout-info {
+    display: none; // Hide character info on smaller screens
   }
 }
 
-@media (max-width: 900px) {
-  .chat-content {
+// Mobile (≤768px): Sidebar becomes overlay, chat full width
+@media (max-width: 768px) {
+  .layout-content {
     grid-template-columns: 1fr;
+    grid-template-areas: "chat";
+  }
 
-    app-character-info {
-      display: none;
+  .layout-sidebar {
+    // Transform sidebar into slide-out overlay
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 280px;
+    height: 100%;
+    z-index: 100;
+    transform: translateX(-100%); // Hidden by default
+    transition: transform 0.3s ease;
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.15);
+
+    &.open {
+      transform: translateX(0); // Slide in when open
     }
+  }
+
+  .layout-info {
+    display: none; // Keep hidden on mobile
+  }
+}
+
+// Small Mobile (≤480px): Wider sidebar overlay
+@media (max-width: 480px) {
+  .layout-sidebar {
+    width: 100%;
+    max-width: 320px;
   }
 }
