@@ -8,6 +8,7 @@ import { CharacterService } from '../../services/character.service';
 import { ChatService } from '../../services/chat.service';
 import { MessageService } from '../../services/message.service';
 import { UserService } from '../../services/user.service';
+import { JwtService } from '../../services/jwt.service';
 import { ChatPane } from '../chat-pane/chat-pane';
 import { ChatSidebar } from '../chat-sidebar/chat-sidebar';
 
@@ -34,7 +35,8 @@ export class ChatLayout implements OnInit {
     private userService: UserService,
     private messageService: MessageService,
     private characterService: CharacterService,
-    private chatService: ChatService
+    private chatService: ChatService,
+    private jwtService: JwtService
   ) { }
 
   ngOnInit(): void {
@@ -73,7 +75,7 @@ export class ChatLayout implements OnInit {
     this.messagesByCharacter[this.selectedCharacterId] = greeting ? [greeting] : [];
     this.messages = this.messagesByCharacter[this.selectedCharacterId];
 
-    const userId = (typeof window !== 'undefined') ? localStorage.getItem('userId') : null;
+    const userId = this.jwtService.getUserId();
     const payload: Partial<Chat> = {
       ownerId: userId || undefined,
       characterId: this.selectedCharacterId,
@@ -102,7 +104,7 @@ export class ChatLayout implements OnInit {
       return;
     }
 
-    const userId = (typeof window !== 'undefined') ? localStorage.getItem('userId') : null;
+    const userId = this.jwtService.getUserId();
     if (userId) {
       this.chatService.getLatestChat(id, userId).subscribe({
         next: (chat) => {
@@ -158,8 +160,7 @@ export class ChatLayout implements OnInit {
         console.error('Logout failed', error);
       },
       complete: () => {
-        localStorage.removeItem('authToken');
-        sessionStorage.removeItem('authToken');
+        this.jwtService.clearToken();
         this.router.navigate(['/login']);
         console.log('User logged out successfully');
       }
@@ -167,7 +168,7 @@ export class ChatLayout implements OnInit {
   }
 
   onLoadPastChats(characterId: string) {
-    const userId = (typeof window !== 'undefined') ? localStorage.getItem('userId') : null;
+    const userId = this.jwtService.getUserId();
     if (!userId) return;
 
     this.chatService.getChatsByCharacter(characterId, userId).subscribe({
