@@ -8,7 +8,7 @@
     --color-primary: #667eea;
     --color-primary-dark: #764ba2;
     --color-primary-light: #6a5fb1;
-    
+
     // Background Colors
     --bg-gradient-light: linear-gradient(135deg, #f7f8ff 0%, #f8f5ff 100%);
     --bg-purple-light: #f0eeff;
@@ -16,13 +16,13 @@
     --bg-purple-lightest: #f7f7ff;
     --bg-white-alpha: rgba(255, 255, 255, 0.1);
     --bg-white-alpha-dark: rgba(255, 255, 255, 0.2);
-    
+
     // Border Colors
     --border-light: #eceaf5;
     --border-lighter: #e6e3f3;
     --border-purple: #b6a9ef;
     --border-purple-light: #e5deff;
-    
+
     // Text Colors
     --text-primary: #1e1e1e;
     --text-secondary: #333;
@@ -30,38 +30,47 @@
     --text-muted: #777;
     --text-light: #7a7a7a;
     --text-lighter: #999;
-    
+
+    // Gray Scale
+    --gray-50: #f9fafb;
+    --gray-200: #e5e7eb;
+    --gray-900: #111827;
+
+    // Purple Scale
+    --purple-50: #faf5ff;
+    --purple-200: #e9d5ff;
+
     // Border Radius
     --radius-sm: 6px;
     --radius-md: 8px;
     --radius-lg: 10px;
     --radius-xl: 12px;
     --radius-2xl: 16px;
-    
+
     // Spacing
     --spacing-xs: 4px;
     --spacing-sm: 8px;
     --spacing-md: 12px;
     --spacing-lg: 16px;
     --spacing-xl: 24px;
-    
+
     // Transitions
     --transition-fast: 0.15s ease;
     --transition-normal: 0.2s ease;
     --transition-smooth: 0.25s ease;
     --transition-slow: 0.3s ease;
-    
+
     // Shadows
     --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.1);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
     --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
     --shadow-purple: 0 8px 18px rgba(102, 126, 234, 0.25);
     --shadow-purple-lg: 0 4px 12px rgba(102, 126, 234, 0.3);
-    
+
     // Backdrop
     --backdrop-blur: blur(8px);
     --backdrop-blur-strong: blur(10px);
-    
+
     // Breakpoints
     --breakpoint-mobile: 768px;
     --breakpoint-tablet: 900px;
@@ -93,12 +102,12 @@
     background: var(--bg-purple-light);
     color: var(--color-primary-light);
     font-weight: 700;
-    
+
     &.large {
         width: 40px;
         height: 40px;
     }
-    
+
     &.small {
         width: 32px;
         height: 32px;
@@ -113,15 +122,15 @@
     font-weight: 600;
     cursor: pointer;
     transition: all var(--transition-slow);
-    
+
     &:hover:not(:disabled) {
         transform: translateY(-2px);
     }
-    
+
     &:active:not(:disabled) {
         transform: translateY(0);
     }
-    
+
     &:disabled {
         opacity: 0.6;
         cursor: not-allowed;
@@ -131,7 +140,7 @@
 .btn-primary {
     background: var(--gradient-primary);
     color: white;
-    
+
     &:hover:not(:disabled) {
         box-shadow: var(--shadow-purple);
     }
@@ -141,7 +150,7 @@
     background: white;
     color: var(--color-primary);
     border: 1px solid var(--border-lighter);
-    
+
     &:hover:not(:disabled) {
         background: var(--bg-purple-lightest);
         border-color: var(--border-purple);
@@ -160,7 +169,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    
+
     &:hover {
         background: var(--bg-purple-lightest);
     }
@@ -181,7 +190,7 @@
     font-size: 1rem;
     outline: none;
     transition: all var(--transition-normal);
-    
+
     &:focus {
         box-shadow: 0 0 0 3px rgba(118, 75, 162, 0.12);
         border-color: var(--border-purple);
@@ -195,7 +204,7 @@
     padding: 1.5rem;
     box-shadow: var(--shadow-sm);
     transition: all var(--transition-slow);
-    
+
     &:hover {
         transform: translateY(-2px);
         box-shadow: var(--shadow-md);
@@ -223,6 +232,7 @@
         opacity: 0;
         transform: translateY(-5px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -234,6 +244,7 @@
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -245,6 +256,7 @@
         opacity: 0;
         transform: translateY(-10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -256,6 +268,7 @@
         opacity: 0;
         transform: translateY(5px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -263,19 +276,26 @@
 }
 
 @keyframes blink {
-    0%, 80%, 100% {
+
+    0%,
+    80%,
+    100% {
         opacity: 0.2;
     }
+
     40% {
         opacity: 1;
     }
 }
 
 @keyframes float {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translateY(0) rotate(0deg);
         opacity: 0.3;
     }
+
     50% {
         transform: translateY(-30px) rotate(180deg);
         opacity: 0.1;
@@ -287,6 +307,7 @@
         opacity: 0;
         transform: scale(0.8);
     }
+
     to {
         opacity: 1;
         transform: scale(1);
@@ -299,12 +320,12 @@
 
 @mixin hover-lift {
     transition: all var(--transition-slow);
-    
+
     &:hover {
         transform: translateY(-2px);
         box-shadow: var(--shadow-md);
     }
-    
+
     &:active {
         transform: translateY(0);
     }
@@ -379,6 +400,7 @@ button {
     font-family: inherit;
 }
 
-input, textarea {
+input,
+textarea {
     font-family: inherit;
 }

@@ -1,3 +1,5 @@
+@use '../../../styles.scss' as *;
+
 .navbar {
     display: flex;
     align-items: center;
@@ -20,8 +22,8 @@
 }
 
 .logo-icon {
-    width: 36px;
-    height: 36px;
+    width: 28px;
+    height: 28px;
     background: var(--gradient-primary);
     border-radius: var(--radius-lg);
     display: flex;
@@ -30,8 +32,8 @@
     box-shadow: var(--shadow-purple-lg);
 
     svg {
-        width: 20px;
-        height: 20px;
+        width: 16px;
+        height: 16px;
         stroke: white;
         stroke-width: 2.5;
     }
@@ -42,7 +44,7 @@
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    font-size: 1.35rem;
+    font-size: 1.15rem;
     font-weight: 800;
     letter-spacing: -0.5px;
 }
@@ -63,16 +65,8 @@
     margin-right: var(--spacing-sm);
 
     .avatar {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
         background: var(--gradient-primary);
         color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-        font-size: 0.9rem;
     }
 
     .user-name {
@@ -82,7 +76,7 @@
     }
 }
 
-.nav-btn {
+.btn {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -109,7 +103,7 @@
     }
 }
 
-.settings-btn {
+.btn-secondary {
     background: white;
     color: var(--color-primary);
     border: 1px solid var(--border-lighter);
@@ -121,7 +115,7 @@
     }
 }
 
-.logout-btn {
+.btn-primary {
     background: var(--gradient-primary);
     color: white;
     border: none;

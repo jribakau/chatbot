@@ -1,3 +1,5 @@
+@use '../../../styles.scss' as *;
+
 .sidebar {
     background: #ffffffaa;
     backdrop-filter: var(--backdrop-blur);
@@ -10,11 +12,11 @@
 
 .conversations-header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    gap: var(--spacing-sm);
 }
 
-.new-chat-btn {
+.btn-primary {
     background: var(--gradient-primary);
     color: white;
     border: none;
@@ -23,14 +25,20 @@
     font-weight: 600;
     cursor: pointer;
     transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    font-size: 0.9rem;
 
-    &:hover {
+    &:hover:not(:disabled) {
         transform: translateY(-1px);
         box-shadow: var(--shadow-purple);
     }
 
-    &:active {
+    &:active:not(:disabled) {
         transform: translateY(0);
+    }
+    
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
     }
 }
 
