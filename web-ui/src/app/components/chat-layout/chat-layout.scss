@@ -8,7 +8,7 @@
   background: var(--bg-gradient-light);
   color: var(--text-primary);
   font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
-  overflow: hidden; // Prevent document scrolling - children handle their own scrolling
+  overflow: hidden; // Establish scroll containment - each child manages its own scrollable content
 }
 
 // ============================================================================
