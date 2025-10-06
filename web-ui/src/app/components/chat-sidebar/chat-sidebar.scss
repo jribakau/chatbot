@@ -8,16 +8,6 @@
     gap: var(--spacing-md);
 }
 
-.brand {
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    font-size: 1.1rem;
-    background: var(--gradient-primary);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-}
-
 .conversations-header {
     display: flex;
     justify-content: space-between;

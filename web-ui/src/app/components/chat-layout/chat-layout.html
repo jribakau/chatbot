@@ -1,17 +1,17 @@
 <div class="chat-container">
-    <app-chat-sidebar
-        [characters]="characters"
-        [selectedCharacterId]="selectedCharacterId"
-        [pastChatsByCharacter]="pastChatsByCharacter"
-        (characterSelected)="selectCharacter($event)"
-        (newChatClicked)="startNewChat()"
-        (newCharacter)="createNewCharacter()"
-        (loadPastChats)="onLoadPastChats($event)"
-        (pastChatSelected)="onSelectPastChat($event)">
-    </app-chat-sidebar>
+    <app-navbar [userName]="currentUsername || undefined" (logout)="onLogout()" (settings)="toggleSettings()">
+    </app-navbar>
 
-    <app-chat-pane [activeCharacter]="activeCharacter" [messages]="messages" [isTyping]="isTyping" [draft]="draft"
-        (draftChange)="draft = $event" (sendMessage)="onSendMessage($event)" (logout)="onLogout()"
-        (clearChat)="clearChat()" (settingsClicked)="toggleSettings()" (editMessage)="onEditMessage($event)">
-    </app-chat-pane>
+    <div class="chat-content">
+        <app-chat-sidebar [characters]="characters" [selectedCharacterId]="selectedCharacterId"
+            [pastChatsByCharacter]="pastChatsByCharacter" (characterSelected)="selectCharacter($event)"
+            (newChatClicked)="startNewChat()" (newCharacter)="createNewCharacter()"
+            (loadPastChats)="onLoadPastChats($event)" (pastChatSelected)="onSelectPastChat($event)">
+        </app-chat-sidebar>
+
+        <app-chat-pane [activeCharacter]="activeCharacter" [messages]="messages" [isTyping]="isTyping" [draft]="draft"
+            (draftChange)="draft = $event" (sendMessage)="onSendMessage($event)" (clearChat)="clearChat()"
+            (editMessage)="onEditMessage($event)">
+        </app-chat-pane>
+    </div>
 </div>
