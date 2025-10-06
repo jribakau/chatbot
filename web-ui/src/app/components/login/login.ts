@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { User } from '../../models/user';
 import { UserService } from '../../services/user.service';
 
@@ -12,16 +12,35 @@ import { UserService } from '../../services/user.service';
     templateUrl: './login.html',
     styleUrls: ['./login.scss']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
     loginUser: User = {};
     password: string = '';
+    errorMessage: string = '';
+    tokenExpired: boolean = false;
+    returnUrl: string = '/chat';
 
     constructor(
         private userService: UserService,
-        private router: Router
+        private router: Router,
+        private route: ActivatedRoute
     ) { }
 
+    ngOnInit() {
+        this.route.queryParams.subscribe(params => {
+            if (params['expired'] === 'true') {
+                this.tokenExpired = true;
+                this.errorMessage = 'Your session has expired. Please log in again.';
+            }
+            if (params['returnUrl']) {
+                this.returnUrl = params['returnUrl'];
+            }
+        });
+    }
+
     onLogin() {
+        this.errorMessage = '';
+        this.tokenExpired = false;
+
         const loginRequest = {
             username: this.loginUser.username,
             password: this.password
@@ -39,10 +58,11 @@ export class LoginComponent {
                 if (response.username) {
                     localStorage.setItem('username', response.username);
                 }
-                this.router.navigate(['/chat']);
+                this.router.navigate([this.returnUrl]);
             },
             (error: any) => {
                 console.error('Login failed', error);
+                this.errorMessage = error.error?.message || 'Login failed. Please check your credentials.';
             }
         );
     }
