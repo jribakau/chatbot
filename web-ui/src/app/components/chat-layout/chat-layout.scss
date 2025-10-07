@@ -48,6 +48,7 @@
 .layout-chat {
   grid-area: chat;
   overflow: hidden; // Component handles internal scrolling
+  transition: all 0.3s ease; // Smooth transition when layout changes
 }
 
 .layout-info {
@@ -59,50 +60,84 @@
 // Responsive Breakpoints
 // ============================================================================
 
-// Tablet (≤1200px): Hide info panel, expand chat
-@media (max-width: 1200px) {
-  .layout-content {
-    grid-template-columns: 280px 1fr;
-    grid-template-areas: "sidebar chat";
-  }
-
-  .layout-info {
-    display: none; // Hide character info on smaller screens
-  }
+// Add transition animations to both sidebars
+.layout-sidebar {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  opacity: 1;
 }
 
-// Mobile (≤768px): Sidebar becomes overlay, chat full width
-@media (max-width: 768px) {
+.layout-info {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  opacity: 1;
+}
+
+// Tablet (≤1000px): Hide both sidebars with slide animations, chat takes full width
+@media (max-width: 1000px) {
   .layout-content {
     grid-template-columns: 1fr;
     grid-template-areas: "chat";
   }
 
   .layout-sidebar {
-    // Transform sidebar into slide-out overlay
+    // Transform left sidebar into slide-out overlay
     position: absolute;
     left: 0;
     top: 0;
     width: 280px;
     height: 100%;
     z-index: 100;
-    transform: translateX(-100%); // Hidden by default
-    transition: transform 0.3s ease;
+    transform: translateX(-100%); // Slide out to the left by default
+    opacity: 0;
+    pointer-events: none;
     box-shadow: 2px 0 12px rgba(0, 0, 0, 0.15);
 
     &.open {
       transform: translateX(0); // Slide in when open
+      opacity: 1;
+      pointer-events: auto;
     }
   }
 
   .layout-info {
-    display: none; // Keep hidden on mobile
+    // Transform right sidebar into slide-out overlay
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 340px;
+    height: 100%;
+    z-index: 100;
+    transform: translateX(100%); // Slide out to the right by default
+    opacity: 0;
+    pointer-events: none;
+    box-shadow: -2px 0 12px rgba(0, 0, 0, 0.15);
+
+    &.open {
+      transform: translateX(0); // Slide in when open
+      opacity: 1;
+      pointer-events: auto;
+    }
   }
 }
 
-// Small Mobile (≤480px): Wider sidebar overlay
+// Mobile (≤768px): Adjust sidebar widths
+@media (max-width: 768px) {
+  .layout-sidebar {
+    width: 280px;
+  }
+
+  .layout-info {
+    width: 320px;
+  }
+}
+
+// Small Mobile (≤480px): Wider sidebar overlays
 @media (max-width: 480px) {
   .layout-sidebar {
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .layout-info {
     width: 100%;
     max-width: 320px;
   }
