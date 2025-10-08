@@ -23,6 +23,10 @@ export class CharacterComponent implements OnInit {
     newFieldKey: string = '';
     newFieldValue: string = '';
 
+    selectedFile: File | null = null;
+    uploadingImage: boolean = false;
+    imagePreview: string | null = null;
+
     constructor(
         private characterService: CharacterService,
         private router: Router
@@ -50,11 +54,15 @@ export class CharacterComponent implements OnInit {
         this.selectedCharacter = character;
         this.isCreating = false;
         this.isEditing = false;
+        this.selectedFile = null;
+        this.imagePreview = null;
     }
 
     startCreate() {
         this.newCharacter = { customFields: {} };
         this.customFieldsArray = [];
+        this.selectedFile = null;
+        this.imagePreview = null;
         this.isCreating = true;
         this.isEditing = false;
         this.selectedCharacter = null;
@@ -76,6 +84,8 @@ export class CharacterComponent implements OnInit {
             }));
         }
 
+        this.selectedFile = null;
+        this.imagePreview = null;
         this.isEditing = true;
         this.isCreating = false;
     }
@@ -86,6 +96,8 @@ export class CharacterComponent implements OnInit {
         this.newCharacter = {};
         this.customFieldsArray = [];
         this.selectedCharacter = null;
+        this.selectedFile = null;
+        this.imagePreview = null;
     }
 
     addCustomField() {
@@ -101,6 +113,91 @@ export class CharacterComponent implements OnInit {
 
     removeCustomField(index: number) {
         this.customFieldsArray.splice(index, 1);
+    }
+
+    onFileSelected(event: Event) {
+        const input = event.target as HTMLInputElement;
+        if (input.files && input.files.length > 0) {
+            const file = input.files[0];
+
+            // Validate file type
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+            if (!allowedTypes.includes(file.type)) {
+                alert('Invalid file type. Please upload a JPG, PNG, or WEBP image.');
+                input.value = '';
+                return;
+            }
+
+            // Validate file size (5MB max)
+            const maxSize = 5 * 1024 * 1024;
+            if (file.size > maxSize) {
+                alert('File size exceeds 5MB. Please choose a smaller image.');
+                input.value = '';
+                return;
+            }
+
+            this.selectedFile = file;
+
+            // Create preview
+            const reader = new FileReader();
+            reader.onload = (e: ProgressEvent<FileReader>) => {
+                this.imagePreview = e.target?.result as string;
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    uploadProfileImage(characterId: string) {
+        if (!this.selectedFile) return;
+
+        this.uploadingImage = true;
+        this.characterService.uploadProfileImage(characterId, this.selectedFile).subscribe(
+            (updatedCharacter: Character) => {
+                console.log('Profile image uploaded successfully');
+                const index = this.characters.findIndex(c => c.id === updatedCharacter.id);
+                if (index !== -1) {
+                    this.characters[index] = updatedCharacter;
+                }
+                if (this.selectedCharacter?.id === updatedCharacter.id) {
+                    this.selectedCharacter = updatedCharacter;
+                }
+                this.selectedFile = null;
+                this.imagePreview = null;
+                this.uploadingImage = false;
+            },
+            (error: any) => {
+                console.error('Failed to upload profile image', error);
+                alert('Failed to upload image. Please try again.');
+                this.uploadingImage = false;
+            }
+        );
+    }
+
+    deleteProfileImage(characterId: string) {
+        if (!confirm('Are you sure you want to delete this profile image?')) {
+            return;
+        }
+
+        this.characterService.deleteProfileImage(characterId).subscribe(
+            (updatedCharacter: Character) => {
+                console.log('Profile image deleted successfully');
+                const index = this.characters.findIndex(c => c.id === updatedCharacter.id);
+                if (index !== -1) {
+                    this.characters[index] = updatedCharacter;
+                }
+                if (this.selectedCharacter?.id === updatedCharacter.id) {
+                    this.selectedCharacter = updatedCharacter;
+                }
+            },
+            (error: any) => {
+                console.error('Failed to delete profile image', error);
+                alert('Failed to delete image. Please try again.');
+            }
+        );
+    }
+
+    getProfileImageUrl(character: Character, size: 'small' | 'medium' | 'large' = 'medium'): string | null {
+        return this.characterService.getProfileImageUrl(character, size);
     }
 
     onCreate() {
@@ -121,6 +218,12 @@ export class CharacterComponent implements OnInit {
                     if (index !== -1) {
                         this.characters[index] = character;
                     }
+
+                    // Upload image if selected
+                    if (this.selectedFile && character.id) {
+                        this.uploadProfileImage(character.id);
+                    }
+
                     this.isEditing = false;
                     this.newCharacter = {};
                     this.customFieldsArray = [];
@@ -135,6 +238,12 @@ export class CharacterComponent implements OnInit {
                 (character: Character) => {
                     console.log('Character created successfully', character);
                     this.characters.push(character);
+
+                    // Upload image if selected
+                    if (this.selectedFile && character.id) {
+                        this.uploadProfileImage(character.id);
+                    }
+
                     this.isCreating = false;
                     this.newCharacter = {};
                     this.customFieldsArray = [];

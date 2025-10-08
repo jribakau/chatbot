@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { Character } from '../../models/character';
+import { CharacterService } from '../../services/character.service';
 
 @Component({
   selector: 'app-character-info',
@@ -10,6 +11,8 @@ import { Character } from '../../models/character';
 })
 export class CharacterInfo {
   @Input() character?: Character;
+
+  constructor(private characterService: CharacterService) {}
 
   getInitials(name: string): string {
     if (!name) return '?';
@@ -48,5 +51,8 @@ export class CharacterInfo {
       minute: '2-digit'
     });
   }
-}
 
+  getProfileImageUrl(character: Character): string | null {
+    return this.characterService.getProfileImageUrl(character, 'large');
+  }
+}

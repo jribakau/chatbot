@@ -2,8 +2,8 @@
 <div class="character-info-panel">
   <div class="character-header">
     <div class="character-avatar">
-      @if (character.customFields?.['photoUrl']) {
-      <img [src]="character.customFields?.['photoUrl']" [alt]="character.name" class="avatar-image" />
+      @if (getProfileImageUrl(character)) {
+      <img [src]="getProfileImageUrl(character)" [alt]="character.name" class="avatar-image" />
       } @else {
       <div class="avatar-placeholder">
         <span class="avatar-initials">{{ getInitials(character.name) }}</span>

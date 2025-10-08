@@ -1,7 +1,8 @@
 package jr.chatbot.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.type.SqlTypes;
@@ -31,6 +32,15 @@ public class Character extends Resource {
     private String systemPrompt;
 
     private String shortGreeting;
+
+    @Column(name = "profile_image_small")
+    private String profileImageSmall;
+
+    @Column(name = "profile_image_medium")
+    private String profileImageMedium;
+
+    @Column(name = "profile_image_large")
+    private String profileImageLarge;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")

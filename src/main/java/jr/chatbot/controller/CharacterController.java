@@ -2,14 +2,17 @@ package jr.chatbot.controller;
 
 import jr.chatbot.entity.Character;
 import jr.chatbot.service.CharacterService;
+import jr.chatbot.service.ImageService;
 import jr.chatbot.util.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -18,6 +21,9 @@ public class CharacterController {
 
     @Autowired
     private CharacterService characterService;
+
+    @Autowired
+    private ImageService imageService;
 
     @GetMapping("/characters")
     public List<Character> getCharacters() {
@@ -33,6 +39,55 @@ public class CharacterController {
     public ResponseEntity<Character> createCharacter(@RequestBody Character character) {
         Character savedCharacter = characterService.saveCharacter(character);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedCharacter);
+    }
+
+    @PostMapping("/characters/{id}/profile-image")
+    public ResponseEntity<Character> uploadProfileImage(@PathVariable UUID id, @RequestParam("file") MultipartFile file) {
+
+        UUID currentUserId = SecurityUtil.getCurrentUserId();
+        if (currentUserId == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
+        }
+
+        Character character = characterService.getCharacterById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Character not found"));
+
+        if (!character.getOwnerId().equals(currentUserId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied");
+        }
+
+        imageService.deleteCharacterImages(id);
+
+        Map<String, String> imageUrls = imageService.uploadAndProcessImage(file, id);
+
+        character.setProfileImageSmall(imageUrls.get("small"));
+        character.setProfileImageMedium(imageUrls.get("medium"));
+        character.setProfileImageLarge(imageUrls.get("large"));
+
+        Character updatedCharacter = characterService.saveCharacter(character);
+        return ResponseEntity.ok(updatedCharacter);
+    }
+
+    @DeleteMapping("/characters/{id}/profile-image")
+    public ResponseEntity<Character> deleteProfileImage(@PathVariable UUID id) {
+        UUID currentUserId = SecurityUtil.getCurrentUserId();
+        if (currentUserId == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
+        }
+
+        Character character = characterService.getCharacterById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Character not found"));
+
+        if (!character.getOwnerId().equals(currentUserId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied");
+        }
+
+        imageService.deleteCharacterImages(id);
+
+        character.setProfileImageSmall(null);
+        character.setProfileImageMedium(null);
+        character.setProfileImageLarge(null);
+
+        Character updatedCharacter = characterService.saveCharacter(character);
+        return ResponseEntity.ok(updatedCharacter);
     }
 
     @PutMapping("/characters/{id}")
@@ -66,6 +121,8 @@ public class CharacterController {
         if (!character.getOwnerId().equals(currentUserId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied");
         }
+
+        imageService.deleteCharacterImages(id);
 
         boolean deleted = characterService.deleteCharacter(id);
         if (deleted) {
