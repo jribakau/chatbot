@@ -21,11 +21,6 @@ public class CharacterService extends AbstractResourceService<Character, Charact
         this.messageService = messageService;
     }
 
-    @Override
-    protected String getResourceName() {
-        return "Character";
-    }
-
     public List<Character> getAllCharacters() {
         if (SecurityUtil.isCurrentUserAdmin()) {
             return repository.findByResourceStatus(ResourceStatusEnum.ACTIVE);

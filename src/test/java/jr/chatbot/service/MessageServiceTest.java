@@ -64,7 +64,7 @@ class MessageServiceTest {
         testCharacter.setCustomFields(new HashMap<>());
 
         // Create MessageService instance and inject mocks
-        messageService = new MessageService(restTemplate);
+        messageService = new MessageService(restTemplate, messageRepository);
         ReflectionTestUtils.setField(messageService, "messageRepository", messageRepository);
 
         // Set up API configuration via reflection

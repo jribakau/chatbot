@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -14,9 +15,21 @@ import java.util.UUID;
 public abstract class AbstractResourceService<T extends Resource, R extends JpaRepository<T, UUID>> {
 
     protected final R repository;
+    private final String resourceName;
 
     protected AbstractResourceService(R repository) {
         this.repository = repository;
+        this.resourceName = deriveResourceName();
+    }
+
+    private String deriveResourceName() {
+        try {
+            ParameterizedType parameterizedType = (ParameterizedType) getClass().getGenericSuperclass();
+            Class<?> resourceClass = (Class<?>) parameterizedType.getActualTypeArguments()[0];
+            return resourceClass.getSimpleName();
+        } catch (Exception e) {
+            return "Resource";
+        }
     }
 
     public List<T> findAll() {
@@ -28,7 +41,7 @@ public abstract class AbstractResourceService<T extends Resource, R extends JpaR
     }
 
     public T findByIdOrThrow(UUID id) {
-        return findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, getResourceName() + " not found"));
+        return findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, resourceName + " not found"));
     }
 
     public T save(T entity) {
@@ -44,8 +57,11 @@ public abstract class AbstractResourceService<T extends Resource, R extends JpaR
     public T update(UUID id, T entity) {
         T existing = findByIdOrThrow(id);
         validateOwnership(existing);
-        entity.setId(id);
+        entity.setId(existing.getId());
         entity.setOwnerId(existing.getOwnerId());
+        entity.setCreatedAt(existing.getCreatedAt());
+        entity.setResourceStatus(existing.getResourceStatus());
+
         return repository.save(entity);
     }
 
@@ -92,5 +108,7 @@ public abstract class AbstractResourceService<T extends Resource, R extends JpaR
         return currentUserId;
     }
 
-    protected abstract String getResourceName();
+    protected String getResourceName() {
+        return resourceName;
+    }
 }

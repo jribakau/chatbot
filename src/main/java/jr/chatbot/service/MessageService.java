@@ -24,7 +24,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class MessageService {
+public class MessageService extends AbstractResourceService<Message, MessageRepository> {
     @Value("${openrouter.api.key}")
     private String apiKey;
 
@@ -42,7 +42,8 @@ public class MessageService {
     @Autowired
     private MessageRepository messageRepository;
 
-    public MessageService(RestTemplate restTemplate) {
+    public MessageService(RestTemplate restTemplate, MessageRepository messageRepository) {
+        super(messageRepository);
         this.restTemplate = restTemplate;
     }
 
@@ -188,5 +189,10 @@ public class MessageService {
             message.setResourceStatus(jr.chatbot.enums.ResourceStatusEnum.DELETED);
             messageRepository.save(message);
         }
+    }
+
+    @Override
+    protected String getResourceName() {
+        return "Message";
     }
 }

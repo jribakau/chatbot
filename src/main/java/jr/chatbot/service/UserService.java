@@ -3,7 +3,6 @@ package jr.chatbot.service;
 import jr.chatbot.entity.User;
 import jr.chatbot.enums.UserRoleEnum;
 import jr.chatbot.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -11,19 +10,20 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class UserService {
+public class UserService extends AbstractResourceService<User, UserRepository> {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public UserService(UserRepository repository, PasswordEncoder passwordEncoder) {
+        super(repository);
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public User registerUser(String username, String email, String rawPassword) {
-        if (userRepository.existsByUsername(username)) {
+        if (repository.existsByUsername(username)) {
             throw new RuntimeException("Username already exists");
         }
-        if (userRepository.existsByEmail(email)) {
+        if (repository.existsByEmail(email)) {
             throw new RuntimeException("Email already exists");
         }
         User user = new User();
@@ -31,23 +31,24 @@ public class UserService {
         user.setEmail(email);
         user.setPasswordHash(passwordEncoder.encode(rawPassword));
         user.setRole(UserRoleEnum.USER);
-        return userRepository.save(user);
+        return repository.save(user);
     }
 
     public Optional<User> findByUsername(String username) {
-        return userRepository.findByUsername(username);
+        return repository.findByUsername(username);
     }
 
+    @Override
     public Optional<User> findById(UUID id) {
-        return userRepository.findById(id);
+        return repository.findById(id);
     }
 
     public Optional<User> findByEmail(String email) {
-        return userRepository.findByEmail(email);
+        return repository.findByEmail(email);
     }
 
     public boolean authenticate(String username, String rawPassword) {
-        Optional<User> userOpt = userRepository.findByUsername(username);
+        Optional<User> userOpt = repository.findByUsername(username);
         return userOpt.isPresent() && passwordEncoder.matches(rawPassword, userOpt.get().getPasswordHash());
     }
 }
