@@ -11,57 +11,50 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class ChatService {
-    private final ChatRepository chatRepository;
+public class ChatService extends AbstractResourceService<Chat, ChatRepository> {
 
     public ChatService(ChatRepository chatRepository) {
-        this.chatRepository = chatRepository;
+        super(chatRepository);
     }
 
-    public Chat saveChat(Chat chat) {
-        return chatRepository.save(chat);
-    }
-
-    public Optional<Chat> findChatById(UUID chatId) {
-        return chatRepository.findById(chatId);
+    @Override
+    protected String getResourceName() {
+        return "Chat";
     }
 
     public Optional<Chat> findChatByIdWithMessages(UUID chatId) {
-        return chatRepository.findByIdWithMessages(chatId);
+        return repository.findByIdWithMessages(chatId);
     }
 
     public Optional<Chat> findLatestChatByCharacterAndOwner(UUID characterId, UUID ownerId) {
-        return chatRepository.findLatestByCharacterIdAndOwnerId(characterId, ownerId);
+        return repository.findLatestByCharacterIdAndOwnerId(characterId, ownerId);
     }
 
     public Optional<Chat> findLatestChatByCharacterAndOwnerWithMessages(UUID characterId, UUID ownerId) {
-        return chatRepository.findLatestByCharacterIdAndOwnerIdWithMessages(characterId, ownerId);
+        return repository.findLatestByCharacterIdAndOwnerIdWithMessages(characterId, ownerId);
     }
 
     public List<Chat> findAllChatsByCharacterAndOwner(UUID characterId, UUID ownerId) {
-        return chatRepository.findAllByCharacterIdAndOwnerId(characterId, ownerId);
+        return repository.findAllByCharacterIdAndOwnerId(characterId, ownerId);
     }
 
     public List<Chat> findAllChatsByCharacterAndOwnerWithMessages(UUID characterId, UUID ownerId) {
-        return chatRepository.findAllByCharacterIdAndOwnerIdWithMessages(characterId, ownerId);
+        return repository.findAllByCharacterIdAndOwnerIdWithMessages(characterId, ownerId);
     }
 
     public void addMessageToChat(UUID chatId, Message message) {
-        Chat chat = chatRepository.findById(chatId)
-                .orElseThrow(() -> new RuntimeException("Chat not found"));
-
+        Chat chat = findByIdOrThrow(chatId);
         message.setChat(chat);
         chat.getMessageList().add(message);
-
-        chatRepository.save(chat);
+        repository.save(chat);
     }
 
     @Transactional
     public int softDeleteChatsByCharacterId(UUID characterId) {
-        return chatRepository.bulkUpdateResourceStatusByCharacterId(characterId, jr.chatbot.enums.ResourceStatusEnum.DELETED);
+        return repository.bulkUpdateResourceStatusByCharacterId(characterId, jr.chatbot.enums.ResourceStatusEnum.DELETED);
     }
 
     public List<Chat> findAllChatsByCharacterId(UUID characterId) {
-        return chatRepository.findByCharacterId(characterId);
+        return repository.findByCharacterId(characterId);
     }
 }

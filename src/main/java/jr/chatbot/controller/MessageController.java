@@ -7,7 +7,6 @@ import jr.chatbot.enums.MessageRoleEnum;
 import jr.chatbot.service.CharacterService;
 import jr.chatbot.service.ChatService;
 import jr.chatbot.service.MessageService;
-import jr.chatbot.util.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +17,7 @@ import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/message")
 public class MessageController {
 
     @Autowired
@@ -30,26 +29,18 @@ public class MessageController {
     @Autowired
     private ChatService chatService;
 
-    @PostMapping("/message")
+    @PostMapping
     public ResponseEntity<Message> handleChat(@RequestBody MessageRequest messageRequest) {
-        UUID currentUserId = SecurityUtil.getCurrentUserId();
-        if (currentUserId == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
-        }
+        UUID currentUserId = chatService.getCurrentUserIdOrThrow();
 
-        var character = characterService.getCharacterById(messageRequest.getCharacterId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Character not found"));
+        var character = characterService.findByIdOrThrow(messageRequest.getCharacterId());
 
         if (messageRequest.getChatId() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Chat ID is required");
         }
 
-        Chat chat = chatService.findChatById(messageRequest.getChatId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Chat not found"));
-
-        if (!chat.getOwnerId().equals(currentUserId)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied to this chat");
-        }
+        Chat chat = chatService.findByIdOrThrow(messageRequest.getChatId());
+        chatService.validateOwnership(chat);
 
         Message userMessage = new Message(MessageRoleEnum.USER, messageRequest.getUserMessage(), ZonedDateTime.now());
         userMessage.setOwnerId(currentUserId);
@@ -63,20 +54,17 @@ public class MessageController {
         return ResponseEntity.ok(aiResponse);
     }
 
-    @PutMapping("/message/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Message> updateMessage(@PathVariable UUID id, @RequestBody Message updatedMessage) {
-        UUID currentUserId = SecurityUtil.getCurrentUserId();
-        if (currentUserId == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
-        }
+        chatService.getCurrentUserIdOrThrow();
 
-        Message existingMessage = messageService.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Message not found"));
+        Message existingMessage = messageService.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Message not found"));
 
         Chat chat = existingMessage.getChat();
-        if (chat == null || !chat.getOwnerId().equals(currentUserId)) {
+        if (chat == null) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied to this message");
         }
+        chatService.validateOwnership(chat);
 
         Message savedMessage = messageService.updateMessage(id, updatedMessage);
         return ResponseEntity.ok(savedMessage);
