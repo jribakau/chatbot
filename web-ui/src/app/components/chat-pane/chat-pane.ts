@@ -3,6 +3,7 @@ import { AfterViewChecked, Component, ElementRef, EventEmitter, Input, Output, V
 import { FormsModule } from '@angular/forms';
 import { Character } from '../../models/character';
 import { Message } from '../../models/message';
+import { CharacterService } from '../../services/character.service';
 
 @Component({
   selector: 'app-chat-pane',
@@ -26,6 +27,8 @@ export class ChatPane implements AfterViewChecked {
   private shouldScroll = false;
   editingMessageId: string | null = null;
   editContent = '';
+
+  constructor(private characterService: CharacterService) {}
 
   ngAfterViewChecked() {
     if (this.shouldScroll) {
@@ -84,6 +87,15 @@ export class ChatPane implements AfterViewChecked {
 
   isEditing(message: Message): boolean {
     return this.editingMessageId === message.id;
+  }
+
+  getProfileImageUrl(character: Character): string | null {
+    return this.characterService.getProfileImageUrl(character, 'medium');
+  }
+
+  getInitials(name: string): string {
+    if (!name) return '?';
+    return name.slice(0, 1).toUpperCase();
   }
 
   private scrollToBottom() {

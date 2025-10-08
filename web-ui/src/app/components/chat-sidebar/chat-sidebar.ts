@@ -1,11 +1,11 @@
-import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Character } from '../../models/character';
 import { Chat } from '../../models/chat';
+import { CharacterService } from '../../services/character.service';
 
 @Component({
   selector: 'app-chat-sidebar',
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './chat-sidebar.html',
   styleUrl: './chat-sidebar.scss'
 })
@@ -20,6 +20,8 @@ export class ChatSidebar {
   @Output() loadPastChats = new EventEmitter<string>();
 
   expandedCharacterId: string | null = null;
+
+  constructor(private characterService: CharacterService) { }
 
   onSelectCharacter(id: string | undefined | null) {
     if (id) {
@@ -80,5 +82,14 @@ export class ChatSidebar {
       return new Date(chat.createdAt).toLocaleDateString();
     }
     return '';
+  }
+
+  getProfileImageUrl(character: Character): string | null {
+    return this.characterService.getProfileImageUrl(character, 'small');
+  }
+
+  getInitials(name: string): string {
+    if (!name) return '?';
+    return name.slice(0, 1).toUpperCase();
   }
 }

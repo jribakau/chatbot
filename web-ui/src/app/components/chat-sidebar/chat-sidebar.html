@@ -8,7 +8,13 @@
         <li class="conversation-wrapper">
             <div class="conversation-item" [class.active]="ch.id === selectedCharacterId"
                 (click)="onSelectCharacter(ch.id)">
-                <div class="avatar">{{ (ch.name.slice(0,1) | uppercase) || '🤖' }}</div>
+                <div class="avatar">
+                    @if (getProfileImageUrl(ch)) {
+                    <img [src]="getProfileImageUrl(ch)" [alt]="ch.name" />
+                    } @else {
+                    {{ getInitials(ch.name) || '🤖' }}
+                    }
+                </div>
                 <div class="meta">
                     <div class="name">{{ ch.name }}</div>
                     <div class="last-message" title="{{ ch.shortGreeting || ch.description }}">{{ ch.shortGreeting ||
