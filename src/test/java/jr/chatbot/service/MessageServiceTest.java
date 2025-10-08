@@ -65,7 +65,6 @@ class MessageServiceTest {
 
         // Create MessageService instance and inject mocks
         messageService = new MessageService(restTemplate, messageRepository);
-        ReflectionTestUtils.setField(messageService, "messageRepository", messageRepository);
 
         // Set up API configuration via reflection
         ReflectionTestUtils.setField(messageService, "apiKey", "test-api-key");

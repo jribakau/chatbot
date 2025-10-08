@@ -38,13 +38,12 @@ public class MessageService extends AbstractResourceService<Message, MessageRepo
     private static final String HEADER_X_TITLE = "X-Title";
 
     private final RestTemplate restTemplate;
-
-    @Autowired
-    private MessageRepository messageRepository;
+    private final MessageRepository messageRepository;
 
     public MessageService(RestTemplate restTemplate, MessageRepository messageRepository) {
         super(messageRepository);
         this.restTemplate = restTemplate;
+        this.messageRepository = messageRepository;
     }
 
     public Optional<Message> findById(UUID id) {
