@@ -17,11 +17,6 @@ public class ChatService extends AbstractResourceService<Chat, ChatRepository> {
         super(chatRepository);
     }
 
-    @Override
-    protected String getResourceName() {
-        return "Chat";
-    }
-
     public Optional<Chat> findChatByIdWithMessages(UUID chatId) {
         return repository.findByIdWithMessages(chatId);
     }
