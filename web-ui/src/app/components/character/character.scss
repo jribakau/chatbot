@@ -1,5 +1,24 @@
 @use '../../../styles.scss' as *;
 
+// Reusable mixins
+@mixin flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@mixin transition-base {
+    transition: all 0.2s ease;
+}
+
+@mixin btn-base {
+    border: none;
+    border-radius: var(--radius-lg);
+    font-weight: 600;
+    cursor: pointer;
+    @include transition-base;
+}
+
 .character-container {
     min-height: 100vh;
     background: var(--gradient-primary);
@@ -47,18 +66,14 @@
 
 .btn-create,
 .btn-back {
+    @include btn-base;
     display: flex;
     align-items: center;
     gap: var(--spacing-xs);
     padding: var(--spacing-sm) var(--spacing-md);
     background: var(--gradient-primary);
     color: white;
-    border: none;
-    border-radius: var(--radius-lg);
     font-size: 0.875rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
     box-shadow: var(--shadow-sm);
 
     svg {
@@ -85,7 +100,7 @@
     padding: var(--spacing-md);
     border-radius: var(--radius-lg);
     cursor: pointer;
-    transition: all 0.2s ease;
+    @include transition-base;
     margin-bottom: var(--spacing-sm);
 
     &:hover {
@@ -103,9 +118,7 @@
     height: 48px;
     border-radius: var(--radius-xl);
     background: var(--gradient-primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    @include flex-center;
     flex-shrink: 0;
     overflow: hidden;
 
@@ -131,17 +144,17 @@
     font-weight: 600;
     color: var(--gray-900);
     margin-bottom: 0.25rem;
-    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .character-description {
     font-size: 0.875rem;
     color: var(--gray-600);
-    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .empty-state {
@@ -163,10 +176,8 @@
 }
 
 .loading-state {
-    display: flex;
+    @include flex-center;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
     padding: var(--spacing-xl);
     color: var(--gray-600);
 
@@ -219,16 +230,11 @@
 }
 
 .btn-close {
+    @include flex-center;
+    @include btn-base;
     width: 36px;
     height: 36px;
-    border: none;
     background: var(--gray-100);
-    border-radius: var(--radius-lg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
 
     svg {
         width: 20px;
@@ -271,7 +277,7 @@
     border-radius: var(--radius-lg);
     font-size: 1rem;
     font-family: inherit;
-    transition: all 0.2s ease;
+    @include transition-base;
 
     &:focus {
         outline: none;
@@ -300,13 +306,9 @@
 
 .btn-primary,
 .btn-secondary {
+    @include btn-base;
     padding: var(--spacing-md) var(--spacing-xl);
-    border: none;
-    border-radius: var(--radius-lg);
     font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
 }
 
 .btn-primary {
@@ -355,9 +357,7 @@
     height: 96px;
     border-radius: var(--radius-2xl);
     background: var(--gradient-primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    @include flex-center;
     flex-shrink: 0;
     overflow: hidden;
 
@@ -380,7 +380,7 @@
 }
 
 .details-title {
-    margin: 0 0 var(--spacing-sm) 0;
+    margin: 0 0 var(--spacing-sm);
     font-size: 1.75rem;
     font-weight: 700;
     color: var(--gray-900);
@@ -398,16 +398,12 @@
 }
 
 .btn-icon {
+    @include flex-center;
+    @include btn-base;
     width: 40px;
     height: 40px;
     border: 1px solid var(--gray-300);
     background: white;
-    border-radius: var(--radius-lg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
 
     svg {
         width: 20px;
@@ -420,14 +416,21 @@
         border-color: var(--gray-400);
     }
 
-    &.btn-danger {
-        &:hover {
-            background: var(--red-50);
-            border-color: var(--red-300);
+    &.btn-danger:hover {
+        background: var(--red-50);
+        border-color: var(--red-300);
 
-            svg {
-                color: var(--red-600);
-            }
+        svg {
+            color: var(--red-600);
+        }
+    }
+
+    &.btn-warning:hover {
+        background: var(--yellow-50);
+        border-color: var(--yellow-300);
+
+        svg {
+            color: var(--yellow-600);
         }
     }
 }
@@ -446,7 +449,7 @@
 }
 
 .section-title {
-    margin: 0 0 var(--spacing-md) 0;
+    margin: 0 0 var(--spacing-md);
     font-size: 1rem;
     font-weight: 600;
     color: var(--gray-700);
@@ -463,13 +466,10 @@
     white-space: pre-wrap;
 }
 
-// Empty Main State
 .empty-main-state {
+    @include flex-center;
     height: 100%;
-    display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
     padding: var(--spacing-xl);
     text-align: center;
     color: var(--gray-400);
@@ -482,7 +482,7 @@
     }
 
     h3 {
-        margin: 0 0 var(--spacing-sm) 0;
+        margin: 0 0 var(--spacing-sm);
         font-size: 1.25rem;
         color: var(--gray-600);
     }
@@ -494,9 +494,7 @@
 }
 
 @keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
+    to { transform: rotate(360deg); }
 }
 
 @media (max-width: 968px) {
@@ -521,7 +519,7 @@
     margin-bottom: var(--spacing-lg);
 
     .section-title {
-        margin: 0 0 var(--spacing-xs) 0;
+        margin: 0 0 var(--spacing-xs);
         font-size: 1rem;
         font-weight: 600;
         color: var(--gray-900);
@@ -564,23 +562,15 @@
     .field-key {
         font-weight: 500;
     }
-
-    .field-value {
-        flex: 1;
-    }
 }
 
 .btn-remove {
+    @include flex-center;
+    @include btn-base;
     width: 36px;
     height: 36px;
-    border: none;
     background: var(--gray-100);
     border-radius: var(--radius-md);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
     flex-shrink: 0;
 
     svg {
@@ -609,18 +599,15 @@
 }
 
 .btn-add-field {
+    @include btn-base;
     display: flex;
     align-items: center;
     gap: var(--spacing-xs);
     padding: var(--spacing-sm) var(--spacing-md);
     background: var(--gradient-primary);
     color: white;
-    border: none;
     border-radius: var(--radius-md);
     font-size: 0.875rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
     white-space: nowrap;
     flex-shrink: 0;
 
@@ -687,19 +674,15 @@
     }
 
     .btn-remove-preview {
+        @include flex-center;
+        @include btn-base;
         position: absolute;
         top: var(--spacing-sm);
         right: var(--spacing-sm);
         width: 32px;
         height: 32px;
-        border: none;
         background: rgba(0, 0, 0, 0.6);
         border-radius: var(--radius-md);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.2s ease;
 
         svg {
             width: 16px;
@@ -728,7 +711,7 @@
     font-size: 0.875rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
+    @include transition-base;
     box-shadow: var(--shadow-sm);
 
     svg {
@@ -746,15 +729,4 @@
     margin: 0;
     font-size: 0.75rem;
     color: var(--gray-500);
-}
-
-.btn-warning {
-    &:hover {
-        background: var(--yellow-50);
-        border-color: var(--yellow-300);
-
-        svg {
-            color: var(--yellow-600);
-        }
-    }
 }
