@@ -4,29 +4,24 @@ import jr.chatbot.dto.ChatRequest;
 import jr.chatbot.entity.Chat;
 import jr.chatbot.entity.Message;
 import jr.chatbot.service.ChatService;
-import jr.chatbot.util.SecurityUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api")
-public class ChatController {
+@RequestMapping("/api/chat")
+public class ChatController extends AbstractResourceController<Chat, ChatService> {
 
-    @Autowired
-    private ChatService chatService;
+    public ChatController(ChatService chatService) {
+        super(chatService);
+    }
 
-    @PostMapping("/chat")
+    @PostMapping("/new")
     public ResponseEntity<Chat> createChat(@RequestBody ChatRequest request) {
-        UUID currentUserId = SecurityUtil.getCurrentUserId();
-        if (currentUserId == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
-        }
+        UUID currentUserId = service.getCurrentUserIdOrThrow();
 
         Chat chat = new Chat();
         chat.setOwnerId(currentUserId);
@@ -40,45 +35,35 @@ public class ChatController {
             chat.getMessageList().addAll(request.getMessageList());
         }
 
-        Chat savedChat = chatService.saveChat(chat);
+        Chat savedChat = service.save(chat);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedChat);
     }
 
-    @GetMapping("/chat")
-    public ResponseEntity<List<Chat>> getChatsByCharacter(@RequestParam UUID characterId, @RequestParam(required = false) UUID ownerId) {
-        UUID currentUserId = SecurityUtil.getCurrentUserId();
-        if (currentUserId == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
-        }
+    @Override
+    @GetMapping
+    public ResponseEntity<List<Chat>> getAll() {
+        throw new org.springframework.web.server.ResponseStatusException(HttpStatus.BAD_REQUEST, "characterId parameter is required");
+    }
 
-        List<Chat> chats = chatService.findAllChatsByCharacterAndOwner(characterId, currentUserId);
+    @GetMapping(params = "characterId")
+    public ResponseEntity<List<Chat>> getChatsByCharacter(@RequestParam UUID characterId) {
+        UUID currentUserId = service.getCurrentUserIdOrThrow();
+        List<Chat> chats = service.findAllChatsByCharacterAndOwner(characterId, currentUserId);
         return ResponseEntity.ok(chats);
     }
 
-    @GetMapping("/chat/latest")
-    public ResponseEntity<Chat> getLatestChat(@RequestParam UUID characterId, @RequestParam(required = false) UUID ownerId) {
-        UUID currentUserId = SecurityUtil.getCurrentUserId();
-        if (currentUserId == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
-        }
-
-        Chat chat = chatService.findLatestChatByCharacterAndOwnerWithMessages(characterId, currentUserId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No chat found"));
+    @GetMapping("/latest")
+    public ResponseEntity<Chat> getLatestChat(@RequestParam UUID characterId) {
+        UUID currentUserId = service.getCurrentUserIdOrThrow();
+        Chat chat = service.findLatestChatByCharacterAndOwnerWithMessages(characterId, currentUserId).orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(HttpStatus.NOT_FOUND, "No chat found"));
         return ResponseEntity.ok(chat);
     }
 
-    @GetMapping("/chat/{id}")
-    public ResponseEntity<Chat> getChatById(@PathVariable UUID id) {
-        UUID currentUserId = SecurityUtil.getCurrentUserId();
-        if (currentUserId == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
-        }
-
-        Chat chat = chatService.findChatByIdWithMessages(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Chat not found"));
-
-        if (!chat.getOwnerId().equals(currentUserId)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied");
-        }
-
+    @Override
+    @GetMapping("/{id}")
+    public ResponseEntity<Chat> getById(@PathVariable UUID id) {
+        Chat chat = service.findChatByIdWithMessages(id).orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(HttpStatus.NOT_FOUND, "Chat not found"));
+        service.validateOwnership(chat);
         return ResponseEntity.ok(chat);
     }
 }

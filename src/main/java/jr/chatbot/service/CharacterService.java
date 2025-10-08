@@ -8,57 +8,44 @@ import jr.chatbot.util.SecurityUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class CharacterService {
-    private final CharacterRepository characterRepository;
+public class CharacterService extends AbstractResourceService<Character, CharacterRepository> {
     private final ChatService chatService;
     private final MessageService messageService;
 
     public CharacterService(CharacterRepository characterRepository, ChatService chatService, MessageService messageService) {
-        this.characterRepository = characterRepository;
+        super(characterRepository);
         this.chatService = chatService;
         this.messageService = messageService;
     }
 
+    @Override
+    protected String getResourceName() {
+        return "Character";
+    }
+
     public List<Character> getAllCharacters() {
         if (SecurityUtil.isCurrentUserAdmin()) {
-            return characterRepository.findByResourceStatus(ResourceStatusEnum.ACTIVE);
+            return repository.findByResourceStatus(ResourceStatusEnum.ACTIVE);
         }
         UUID currentUserId = SecurityUtil.getCurrentUserId();
-        return characterRepository.findByResourceStatusAndOwnerId(ResourceStatusEnum.ACTIVE, currentUserId);
+        return repository.findByResourceStatusAndOwnerId(ResourceStatusEnum.ACTIVE, currentUserId);
     }
 
+    @Override
     @Transactional
-    public Optional<Character> getCharacterById(UUID id) {
-        return characterRepository.findById(id);
-    }
+    public boolean softDelete(UUID id) {
+        Character character = findByIdOrThrow(id);
+        validateOwnership(character);
 
-    public Character saveCharacter(Character character) {
-        if (character.getId() == null && character.getOwnerId() == null) {
-            UUID currentUserId = SecurityUtil.getCurrentUserId();
-            if (currentUserId != null) {
-                character.setOwnerId(currentUserId);
-            }
-        }
-        return characterRepository.save(character);
-    }
+        character.setResourceStatus(ResourceStatusEnum.DELETED);
+        repository.save(character);
 
-    @Transactional
-    public boolean deleteCharacter(UUID id) {
-        Optional<Character> characterOpt = characterRepository.findById(id);
-        if (characterOpt.isPresent()) {
-            Character character = characterOpt.get();
-            character.setResourceStatus(ResourceStatusEnum.DELETED);
-            characterRepository.save(character);
+        messageService.softDeleteMessagesByCharacterId(id);
+        chatService.softDeleteChatsByCharacterId(id);
 
-            messageService.softDeleteMessagesByCharacterId(id);
-            chatService.softDeleteChatsByCharacterId(id);
-
-            return true;
-        }
-        return false;
+        return true;
     }
 }
