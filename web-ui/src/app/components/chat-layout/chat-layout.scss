@@ -31,7 +31,6 @@
     1fr // Chat - flexible, takes remaining space
     340px; // Info panel - fixed width
   grid-template-areas: "sidebar chat info";
-  gap: 0;
   overflow: hidden; // Children manage their own scrolling
   position: relative;
 }

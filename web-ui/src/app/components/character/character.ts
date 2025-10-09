@@ -3,11 +3,15 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Character } from '../../models/character';
 import { CharacterService } from '../../services/character.service';
+import { JwtService } from '../../services/jwt.service';
+import { SharedStateService } from '../../services/shared-state.service';
+import { NavbarComponent } from '../navbar/navbar';
+import { SidebarAction, SidebarComponent } from '../sidebar/sidebar';
 
 @Component({
     selector: 'app-character',
     standalone: true,
-    imports: [FormsModule],
+    imports: [FormsModule, NavbarComponent, SidebarComponent],
     templateUrl: './character.html',
     styleUrls: ['./character.scss']
 })
@@ -27,13 +31,35 @@ export class CharacterComponent implements OnInit {
     uploadingImage: boolean = false;
     imagePreview: string | null = null;
 
+    currentUsername: string | null = null;
+
     constructor(
         private characterService: CharacterService,
-        private router: Router
+        private router: Router,
+        private jwtService: JwtService,
+        private sharedStateService: SharedStateService
     ) { }
 
     ngOnInit() {
         this.loadCharacters();
+        this.loadCurrentUser();
+    }
+
+    get sidebarActions(): SidebarAction[] {
+        return [
+            {
+                label: 'New Character',
+                handler: () => this.startCreate()
+            },
+            {
+                label: 'Back to Chat',
+                handler: () => this.backToChat()
+            }
+        ];
+    }
+
+    loadCurrentUser() {
+        this.currentUsername = this.jwtService.getUsername();
     }
 
     loadCharacters() {
@@ -42,6 +68,19 @@ export class CharacterComponent implements OnInit {
             (characters: Character[]) => {
                 this.characters = characters;
                 this.loading = false;
+
+                // Check if there's a shared selected character from the chat page
+                const sharedCharacterId = this.sharedStateService.getSelectedCharacterId();
+                if (sharedCharacterId) {
+                    const character = characters.find(c => c.id === sharedCharacterId);
+                    if (character) {
+                        // Directly start editing the character
+                        this.startEdit(character);
+                    }
+                } else {
+                    // If no character is selected, start creating a new one
+                    this.startCreate();
+                }
             },
             (error: any) => {
                 console.error('Failed to load characters', error);
@@ -52,10 +91,19 @@ export class CharacterComponent implements OnInit {
 
     selectCharacter(character: Character) {
         this.selectedCharacter = character;
-        this.isCreating = false;
-        this.isEditing = false;
-        this.selectedFile = null;
-        this.imagePreview = null;
+        // Update shared state so chat page knows about this selection
+        if (character.id) {
+            this.sharedStateService.setSelectedCharacterId(character.id);
+        }
+    }
+
+    onCharacterSelected(characterId: string) {
+        const character = this.characters.find(c => c.id === characterId);
+        if (character) {
+            this.selectCharacter(character);
+            // Automatically start editing when a character is selected
+            this.startEdit(character);
+        }
     }
 
     startCreate() {
@@ -70,6 +118,16 @@ export class CharacterComponent implements OnInit {
 
     backToChat() {
         this.router.navigate(['/chat']);
+    }
+
+    onLogout() {
+        this.jwtService.clearToken();
+        this.router.navigate(['/login']);
+    }
+
+    toggleSettings() {
+        console.log('Settings clicked');
+        // Implement settings logic here
     }
 
     startEdit(character: Character) {

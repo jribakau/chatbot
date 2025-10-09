@@ -1,299 +1,174 @@
-<div class="character-container">
-    <div class="character-layout">
-        <div class="character-sidebar">
-            <div class="sidebar-header">
-                <h2 class="sidebar-title">Characters</h2>
-                <button class="btn-create" (click)="startCreate()">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                    </svg>
-                    New Character
-                </button>
-                <button class="btn-back" (click)="backToChat()">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M15 18l-6-6 6-6"></path>
-                    </svg>
-                    Back to Chat
-                </button>
-            </div>
+<div class="character-page">
+    <!-- Top Navigation Bar -->
+    <app-navbar [userName]="currentUsername || undefined" (logout)="onLogout()" (settings)="toggleSettings()">
+    </app-navbar>
 
-            @if (!loading) {
-            <div class="character-list">
-                @for (character of characters; track character.id) {
-                <div class="character-item" [class.active]="selectedCharacter?.id === character.id"
-                    (click)="selectCharacter(character)">
-                    <div class="character-avatar">
-                        @if (getProfileImageUrl(character, 'small')) {
-                        <img [src]="getProfileImageUrl(character, 'small')" [alt]="character.name" />
-                        } @else {
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
-                        </svg>
-                        }
-                    </div>
-                    <div class="character-info">
-                        <div class="character-name">{{ character.name }}</div>
-                        <div class="character-description">{{ character.description || 'No description' }}</div>
-                    </div>
-                </div>
-                }
+    <div class="character-container">
+        <div class="character-layout">
+            <!-- Sidebar using the new generic component -->
+            <app-sidebar class="character-sidebar" title="Characters" [characters]="characters"
+                [selectedCharacterId]="selectedCharacter?.id || null" [actions]="sidebarActions" [showPastChats]="false"
+                (characterSelected)="onCharacterSelected($event)">
+            </app-sidebar>
 
-                @if (characters.length === 0) {
-                <div class="empty-state">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="9" cy="7" r="4"></circle>
-                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                    </svg>
-                    <p>No characters yet</p>
-                </div>
-                }
-            </div>
-            }
-
-            @if (loading) {
-            <div class="loading-state">
-                <div class="spinner"></div>
-                <p>Loading characters...</p>
-            </div>
-            }
-        </div>
-
-        <div class="character-main">
-            @if (isCreating || isEditing) {
-            <div class="character-form">
-                <div class="form-header">
-                    <h2>{{ isCreating ? 'Create New Character' : 'Edit Character' }}</h2>
-                    <button class="btn-close" (click)="cancelEdit()">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="18" y1="6" x2="6" y2="18"></line>
-                            <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
-                    </button>
-                </div>
-
-                <form (ngSubmit)="onCreate()" #characterForm="ngForm" class="form-content">
-                    <div class="input-group">
-                        <label for="name" class="input-label">Name *</label>
-                        <input id="name" type="text" placeholder="Enter character name" required
-                            [(ngModel)]="newCharacter.name" name="name" class="input-field" />
+            <div class="character-main">
+                @if (isCreating || isEditing) {
+                <div class="character-form">
+                    <div class="form-header">
+                        <h2>{{ isCreating ? 'Create New Character' : 'Edit Character' }}</h2>
+                        <button class="btn-close" (click)="cancelEdit()">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
                     </div>
 
-                    <div class="input-group">
-                        <label class="input-label">Profile Image</label>
-                        <div class="image-upload-section">
-                            @if (imagePreview) {
-                            <div class="image-preview">
-                                <img [src]="imagePreview" alt="Profile preview" />
-                                <button type="button" class="btn-remove-preview"
-                                    (click)="selectedFile = null; imagePreview = null">
+                    <form (ngSubmit)="onCreate()" #characterForm="ngForm" class="form-content">
+                        <div class="input-group">
+                            <label for="name" class="input-label">Name *</label>
+                            <input id="name" type="text" placeholder="Enter character name" required
+                                [(ngModel)]="newCharacter.name" name="name" class="input-field" />
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">Profile Image</label>
+                            <div class="image-upload-section">
+                                @if (imagePreview) {
+                                <div class="image-preview">
+                                    <img [src]="imagePreview" alt="Profile preview" />
+                                    <button type="button" class="btn-remove-preview"
+                                        (click)="selectedFile = null; imagePreview = null">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                                        </svg>
+                                    </button>
+                                </div>
+                                }
+                                <input type="file" id="profileImage" (change)="onFileSelected($event)"
+                                    accept="image/jpeg,image/jpg,image/png,image/webp" class="file-input" />
+                                <label for="profileImage" class="file-input-label">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                         stroke="currentColor" stroke-width="2">
-                                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="17 8 12 3 7 8"></polyline>
+                                        <line x1="12" y1="3" x2="12" y2="15"></line>
                                     </svg>
-                                </button>
+                                    {{ imagePreview ? 'Change Image' : 'Choose Image' }}
+                                </label>
+                                <p class="file-input-hint">JPG, PNG, or WEBP (max 5MB)</p>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="description" class="input-label">Description</label>
+                            <textarea id="description" placeholder="Brief description of the character"
+                                [(ngModel)]="newCharacter.description" name="description" class="textarea-field"
+                                rows="3"></textarea>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="systemPrompt" class="input-label">System Prompt</label>
+                            <textarea id="systemPrompt"
+                                placeholder="Enter the system prompt that defines this character's behavior"
+                                [(ngModel)]="newCharacter.systemPrompt" name="systemPrompt" class="textarea-field"
+                                rows="6"></textarea>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="shortGreeting" class="input-label">Short Greeting</label>
+                            <input id="shortGreeting" type="text" placeholder="Initial greeting message"
+                                [(ngModel)]="newCharacter.shortGreeting" name="shortGreeting" class="input-field" />
+                        </div>
+
+                        <div class="custom-fields-section">
+                            <div class="section-header">
+                                <h3 class="section-title">Custom Fields</h3>
+                                <p class="section-subtitle">Add custom attributes like age, ethnicity, hobbies, etc.</p>
+                            </div>
+
+                            @if (customFieldsArray.length > 0) {
+                            <div class="custom-fields-list">
+                                @for (field of customFieldsArray; track $index) {
+                                <div class="custom-field-item">
+                                    <div class="custom-field-inputs">
+                                        <input type="text" placeholder="Field name" [(ngModel)]="field.key"
+                                            [name]="'fieldKey' + $index" class="input-field field-key" />
+                                        <input type="text" placeholder="Field value" [(ngModel)]="field.value"
+                                            [name]="'fieldValue' + $index" class="input-field field-value" />
+                                    </div>
+                                    <button type="button" class="btn-remove" (click)="removeCustomField($index)"
+                                        title="Remove field">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                                        </svg>
+                                    </button>
+                                </div>
+                                }
                             </div>
                             }
-                            <input type="file" id="profileImage" (change)="onFileSelected($event)"
-                                accept="image/jpeg,image/jpg,image/png,image/webp" class="file-input" />
-                            <label for="profileImage" class="file-input-label">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="2">
-                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                    <polyline points="17 8 12 3 7 8"></polyline>
-                                    <line x1="12" y1="3" x2="12" y2="15"></line>
-                                </svg>
-                                {{ imagePreview ? 'Change Image' : 'Choose Image' }}
-                            </label>
-                            <p class="file-input-hint">JPG, PNG, or WEBP (max 5MB)</p>
-                        </div>
-                    </div>
 
-                    <div class="input-group">
-                        <label for="description" class="input-label">Description</label>
-                        <textarea id="description" placeholder="Brief description of the character"
-                            [(ngModel)]="newCharacter.description" name="description" class="textarea-field"
-                            rows="3"></textarea>
-                    </div>
-
-                    <div class="input-group">
-                        <label for="systemPrompt" class="input-label">System Prompt</label>
-                        <textarea id="systemPrompt"
-                            placeholder="Enter the system prompt that defines this character's behavior"
-                            [(ngModel)]="newCharacter.systemPrompt" name="systemPrompt" class="textarea-field"
-                            rows="6"></textarea>
-                    </div>
-
-                    <div class="input-group">
-                        <label for="shortGreeting" class="input-label">Short Greeting</label>
-                        <input id="shortGreeting" type="text" placeholder="Initial greeting message"
-                            [(ngModel)]="newCharacter.shortGreeting" name="shortGreeting" class="input-field" />
-                    </div>
-
-                    <div class="custom-fields-section">
-                        <div class="section-header">
-                            <h3 class="section-title">Custom Fields</h3>
-                            <p class="section-subtitle">Add custom attributes like age, ethnicity, hobbies, etc.</p>
-                        </div>
-
-                        @if (customFieldsArray.length > 0) {
-                        <div class="custom-fields-list">
-                            @for (field of customFieldsArray; track $index) {
-                            <div class="custom-field-item">
+                            <div class="add-custom-field">
                                 <div class="custom-field-inputs">
-                                    <input type="text" placeholder="Field name" [(ngModel)]="field.key"
-                                        [name]="'fieldKey' + $index" class="input-field field-key" />
-                                    <input type="text" placeholder="Field value" [(ngModel)]="field.value"
-                                        [name]="'fieldValue' + $index" class="input-field field-value" />
+                                    <input type="text" placeholder="Field name (e.g., Age, Hobbies)"
+                                        [(ngModel)]="newFieldKey" name="newFieldKey" class="input-field field-key" />
+                                    <input type="text" placeholder="Field value" [(ngModel)]="newFieldValue"
+                                        name="newFieldValue" class="input-field field-value" />
                                 </div>
-                                <button type="button" class="btn-remove" (click)="removeCustomField($index)"
-                                    title="Remove field">
+                                <button type="button" class="btn-add-field" (click)="addCustomField()"
+                                    [disabled]="!newFieldKey.trim()">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                         stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                         stroke-linejoin="round">
-                                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                                        <line x1="5" y1="12" x2="19" y2="12"></line>
                                     </svg>
+                                    Add Field
                                 </button>
                             </div>
-                            }
                         </div>
-                        }
 
-                        <div class="add-custom-field">
-                            <div class="custom-field-inputs">
-                                <input type="text" placeholder="Field name (e.g., Age, Hobbies)"
-                                    [(ngModel)]="newFieldKey" name="newFieldKey" class="input-field field-key" />
-                                <input type="text" placeholder="Field value" [(ngModel)]="newFieldValue"
-                                    name="newFieldValue" class="input-field field-value" />
-                            </div>
-                            <button type="button" class="btn-add-field" (click)="addCustomField()"
-                                [disabled]="!newFieldKey.trim()">
+                        <div class="form-actions">
+                            <button type="button" class="btn-secondary" (click)="cancelEdit()">Cancel</button>
+                            @if (isEditing && selectedCharacter && selectedCharacter.id) {
+                            <button type="button" class="btn-danger" (click)="onDelete(selectedCharacter.id)">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    stroke-linejoin="round" style="width: 16px; height: 16px;">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path
+                                        d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                                    </path>
                                 </svg>
-                                Add Field
+                                Delete
+                            </button>
+                            }
+                            <button type="submit" class="btn-primary" [disabled]="!characterForm.valid">
+                                {{ isCreating ? 'Create Character' : 'Update Character' }}
                             </button>
                         </div>
-                    </div>
-
-                    <div class="form-actions">
-                        <button type="button" class="btn-secondary" (click)="cancelEdit()">Cancel</button>
-                        <button type="submit" class="btn-primary" [disabled]="!characterForm.valid">
-                            {{ isCreating ? 'Create Character' : 'Update Character' }}
-                        </button>
-                    </div>
-                </form>
-            </div>
-            }
-
-            @if (selectedCharacter && !isCreating && !isEditing) {
-            <div class="character-details">
-                <div class="details-header">
-                    <div class="character-avatar-large">
-                        @if (getProfileImageUrl(selectedCharacter, 'large')) {
-                        <img [src]="getProfileImageUrl(selectedCharacter, 'large')" [alt]="selectedCharacter.name" />
-                        } @else {
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
-                        </svg>
-                        }
-                    </div>
-                    <div class="details-title-section">
-                        <h2 class="details-title">{{ selectedCharacter.name }}</h2>
-                        @if (selectedCharacter.description) {
-                        <p class="details-subtitle">{{ selectedCharacter.description }}</p>
-                        }
-                    </div>
-                    <div class="details-actions">
-                        <button class="btn-icon" (click)="startEdit(selectedCharacter)">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                            </svg>
-                        </button>
-                        @if (getProfileImageUrl(selectedCharacter, 'large')) {
-                        <button class="btn-icon btn-warning" (click)="deleteProfileImage(selectedCharacter.id!)"
-                            title="Delete profile image">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                                <line x1="9" y1="9" x2="15" y2="15"></line>
-                                <line x1="15" y1="9" x2="9" y2="15"></line>
-                            </svg>
-                        </button>
-                        }
-                        <button class="btn-icon btn-danger" (click)="onDelete(selectedCharacter.id!)">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="3 6 5 6 21 6"></polyline>
-                                <path
-                                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
-                                </path>
-                            </svg>
-                        </button>
-                    </div>
+                    </form>
                 </div>
+                }
 
-                <div class="details-content">
-                    @if (selectedCharacter.systemPrompt) {
-                    <div class="detail-section">
-                        <h3 class="section-title">System Prompt</h3>
-                        <div class="section-content">{{ selectedCharacter.systemPrompt }}</div>
-                    </div>
-                    }
-
-                    @if (selectedCharacter.shortGreeting) {
-                    <div class="detail-section">
-                        <h3 class="section-title">Greeting</h3>
-                        <div class="section-content">{{ selectedCharacter.shortGreeting }}</div>
-                    </div>
-                    }
-
-                    @if (selectedCharacter.customFields && getCustomFieldsArray(selectedCharacter.customFields).length >
-                    0) {
-                    <div class="detail-section">
-                        <h3 class="section-title">Custom Fields</h3>
-                        <div class="custom-fields-display">
-                            @for (field of getCustomFieldsArray(selectedCharacter.customFields); track field.key) {
-                            <div class="custom-field-display-item">
-                                <span class="field-label">{{ field.key }}:</span>
-                                <span class="field-value">{{ field.value }}</span>
-                            </div>
-                            }
-                        </div>
-                    </div>
-                    }
+                @if (!isCreating && !isEditing) {
+                <div class="empty-main-state">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    <h3>Select a character</h3>
+                    <p>Choose a character from the list or create a new one</p>
                 </div>
+                }
             </div>
-            }
-
-            @if (!selectedCharacter && !isCreating && !isEditing) {
-            <div class="empty-main-state">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="12" cy="7" r="4"></circle>
-                </svg>
-                <h3>Select a character</h3>
-                <p>Choose a character from the list or create a new one</p>
-            </div>
-            }
         </div>
     </div>
 </div>

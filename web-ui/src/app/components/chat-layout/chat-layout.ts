@@ -10,9 +10,10 @@ import { ChatService } from '../../services/chat.service';
 import { JwtService } from '../../services/jwt.service';
 import { MessageService } from '../../services/message.service';
 import { UserService } from '../../services/user.service';
+import { SharedStateService } from '../../services/shared-state.service';
 import { CharacterInfo } from '../character-info/character-info';
 import { ChatPane } from '../chat-pane/chat-pane';
-import { ChatSidebar } from '../chat-sidebar/chat-sidebar';
+import { SidebarComponent, SidebarAction } from '../sidebar/sidebar';
 import { NavbarComponent } from '../navbar/navbar';
 
 /**
@@ -21,7 +22,7 @@ import { NavbarComponent } from '../navbar/navbar';
  */
 @Component({
   selector: 'app-chat-layout',
-  imports: [ChatSidebar, ChatPane, NavbarComponent, CharacterInfo],
+  imports: [SidebarComponent, ChatPane, NavbarComponent, CharacterInfo],
   templateUrl: './chat-layout.html',
   styleUrl: './chat-layout.scss'
 })
@@ -46,7 +47,8 @@ export class ChatLayout implements OnInit, OnDestroy {
     private readonly messageService: MessageService,
     private readonly characterService: CharacterService,
     private readonly chatService: ChatService,
-    private readonly jwtService: JwtService
+    private readonly jwtService: JwtService,
+    private readonly sharedStateService: SharedStateService
   ) { }
 
   ngOnInit(): void {
@@ -76,6 +78,37 @@ export class ChatLayout implements OnInit, OnDestroy {
     return this.jwtService.getUsername();
   }
 
+  /**
+   * Returns sidebar actions for the chat layout
+   */
+  get sidebarActions(): SidebarAction[] {
+    return [
+      {
+        label: 'New Chat',
+        handler: () => this.startNewChat(),
+        disabled: !this.selectedCharacterId
+      },
+      {
+        label: 'New Character',
+        handler: () => this.createNewCharacter()
+      },
+      {
+        label: 'Edit Character',
+        handler: () => this.editSelectedCharacter(),
+        disabled: !this.selectedCharacterId
+      }
+    ];
+  }
+
+  /**
+   * Navigates to character editing page with selected character
+   */
+  editSelectedCharacter(): void {
+    if (this.selectedCharacterId) {
+      this.router.navigate(['/character']);
+    }
+  }
+
   // ============================================================================
   // Character Management
   // ============================================================================
@@ -99,7 +132,14 @@ export class ChatLayout implements OnInit, OnDestroy {
    * Automatically selects the first character if none is currently selected
    */
   private selectFirstCharacterIfNoneSelected(chars: Character[]): void {
-    if (chars.length && !this.selectedCharacterId) {
+    // Check if there's a shared selected character from navigation
+    const sharedCharacterId = this.sharedStateService.getSelectedCharacterId();
+    
+    if (sharedCharacterId && chars.some(c => c.id === sharedCharacterId)) {
+      // Use the shared selected character
+      this.selectCharacter(sharedCharacterId);
+    } else if (chars.length && !this.selectedCharacterId) {
+      // Otherwise select the first character
       const firstId = chars[0].id;
       if (firstId) {
         this.selectCharacter(firstId);
@@ -108,9 +148,10 @@ export class ChatLayout implements OnInit, OnDestroy {
   }
 
   /**
-   * Navigates to character creation page
+   * Navigates to character creation page with no selection
    */
   createNewCharacter(): void {
+    this.sharedStateService.clearSelectedCharacterId();
     this.router.navigate(['/character']);
   }
 
@@ -125,6 +166,8 @@ export class ChatLayout implements OnInit, OnDestroy {
     if (!id) return;
 
     this.selectedCharacterId = id;
+    // Update shared state so character page knows about this selection
+    this.sharedStateService.setSelectedCharacterId(id);
 
     // Check if we already have a chat loaded for this character
     if (this.chatByCharacter[id]) {

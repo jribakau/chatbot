@@ -7,11 +7,18 @@
     <!-- Three-Column Content Area: Sidebar | Chat | Info -->
     <div class="layout-content">
         <!-- Left: Character & Chat List -->
-        <app-chat-sidebar class="layout-sidebar" [characters]="characters" [selectedCharacterId]="selectedCharacterId"
-            [pastChatsByCharacter]="pastChatsByCharacter" (characterSelected)="selectCharacter($event)"
-            (newChatClicked)="startNewChat()" (newCharacter)="createNewCharacter()"
-            (loadPastChats)="onLoadPastChats($event)" (pastChatSelected)="onSelectPastChat($event)">
-        </app-chat-sidebar>
+        <app-sidebar 
+            class="layout-sidebar" 
+            title="Conversations"
+            [characters]="characters" 
+            [selectedCharacterId]="selectedCharacterId"
+            [pastChatsByCharacter]="pastChatsByCharacter"
+            [actions]="sidebarActions"
+            [showPastChats]="true"
+            (characterSelected)="selectCharacter($event)"
+            (loadPastChats)="onLoadPastChats($event)" 
+            (pastChatSelected)="onSelectPastChat($event)">
+        </app-sidebar>
 
         <!-- Center: Active Chat Messages -->
         <app-chat-pane class="layout-chat" [activeCharacter]="activeCharacter" [messages]="messages"

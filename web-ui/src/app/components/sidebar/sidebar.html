@@ -1,0 +1,77 @@
+<aside class="sidebar">
+    <div class="sidebar-header">
+        <h2 class="sidebar-title">{{ title }}</h2>
+        @for (action of actions; track action.label) {
+        <button class="btn btn-action" (click)="executeAction(action)" [disabled]="action.disabled"
+            [title]="action.label">
+            @if (action.icon) {
+            <span [innerHTML]="action.icon"></span>
+            }
+            {{ action.label }}
+        </button>
+        }
+    </div>
+
+    <ul class="character-list">
+        @for (ch of characters; track ch.id) {
+        <li class="character-wrapper">
+            <div class="character-item" [class.active]="ch.id === selectedCharacterId"
+                (click)="onSelectCharacter(ch.id)">
+                <div class="avatar">
+                    @if (getProfileImageUrl(ch)) {
+                    <img [src]="getProfileImageUrl(ch)" [alt]="ch.name" />
+                    } @else {
+                    {{ getInitials(ch.name) || '🤖' }}
+                    }
+                </div>
+                <div class="meta">
+                    <div class="name">{{ ch.name }}</div>
+                    <div class="description" title="{{ ch.shortGreeting || ch.description }}">
+                        {{ ch.shortGreeting || ch.description }}
+                    </div>
+                </div>
+                @if (showPastChats) {
+                <button class="dropdown-toggle" (click)="togglePastChats($event, ch.id)"
+                    [class.expanded]="isExpanded(ch.id)">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path
+                            d="M4.427 7.427l3.396 3.396a.25.25 0 00.354 0l3.396-3.396A.25.25 0 0011.396 7H4.604a.25.25 0 00-.177.427z" />
+                    </svg>
+                </button>
+                }
+            </div>
+
+            @if (showPastChats && isExpanded(ch.id)) {
+            <ul class="past-chats-list">
+                @for (chat of getPastChats(ch.id); track chat.id) {
+                <li class="past-chat-item" (click)="onSelectPastChat($event, chat)">
+                    <div class="past-chat-meta">
+                        <div class="past-chat-preview">{{ getChatPreview(chat) }}</div>
+                        <div class="past-chat-date">{{ getChatDate(chat) }}</div>
+                    </div>
+                </li>
+                }
+                @if (getPastChats(ch.id).length === 0) {
+                <li class="no-chats">
+                    No past chats
+                </li>
+                }
+            </ul>
+            }
+        </li>
+        }
+
+        @if (characters.length === 0) {
+        <li class="empty-state">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+            <p>No characters yet</p>
+        </li>
+        }
+    </ul>
+</aside>
