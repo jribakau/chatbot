@@ -8,7 +8,6 @@ import jr.chatbot.entity.Character;
 import jr.chatbot.entity.Message;
 import jr.chatbot.enums.MessageRoleEnum;
 import jr.chatbot.repository.MessageRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -25,13 +24,13 @@ import java.util.UUID;
 
 @Service
 public class MessageService extends AbstractResourceService<Message, MessageRepository> {
-    @Value("${openrouter.api.key}")
+    @Value("${openrouter.api.key:}")
     private String apiKey;
 
-    @Value("${openrouter.api.url}")
+    @Value("${openrouter.api.url:https://openrouter.ai/api/v1/chat/completions}")
     private String openRouterApiUrl;
 
-    @Value("${openrouter.model}")
+    @Value("${openrouter.model:openrouter/auto}")
     private String openRouterModel;
 
     private static final String HEADER_HTTP_REFERER = "HTTP-Referer";
