@@ -20,10 +20,10 @@ public class Character extends Resource {
     @Column(nullable = false)
     private String name;
 
-    @Column(columnDefinition = "TEXT")
+    @Column
     private String description;
 
-    @Column(columnDefinition = "TEXT")
+    @Column
     private String systemPrompt;
 
     private String shortGreeting;
@@ -38,6 +38,6 @@ public class Character extends Resource {
     private String profileImageLarge;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "jsonb")
+    @Column
     private Map<String, String> customFields = new HashMap<>();
 }
