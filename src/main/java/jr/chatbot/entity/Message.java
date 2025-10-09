@@ -26,7 +26,7 @@ public class Message extends Resource {
     private Chat chat;
     @Column
     private MessageRoleEnum role;
-    @Column(columnDefinition = "TEXT")
+    @Column
     private String content;
     @Column
     private ZonedDateTime timestamp;
