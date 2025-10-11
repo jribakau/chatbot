@@ -9,6 +9,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
@@ -26,10 +28,18 @@ public class Message extends Resource {
     private Chat chat;
     @Column
     private MessageRoleEnum role;
-    @Column
+    @Column(length = 10000)
     private String content;
     @Column
     private ZonedDateTime timestamp;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "message_versions", joinColumns = @JoinColumn(name = "message_id"))
+    @Column(name = "version_content", length = 10000)
+    private List<String> versions = new ArrayList<>();
+
+    @Column(name = "current_version_index")
+    private Integer currentVersionIndex;
 
     public Message(MessageRoleEnum role, String content, ZonedDateTime timestamp) {
         this.role = role;

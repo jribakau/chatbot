@@ -7,6 +7,7 @@ import jr.chatbot.dto.openrouter.OpenRouterChatResponse;
 import jr.chatbot.entity.Character;
 import jr.chatbot.entity.Message;
 import jr.chatbot.enums.MessageRoleEnum;
+import jr.chatbot.enums.ResourceStatusEnum;
 import jr.chatbot.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -30,7 +31,7 @@ public class MessageService extends AbstractResourceService<Message, MessageRepo
     @Value("${openrouter.api.url:https://openrouter.ai/api/v1/chat/completions}")
     private String openRouterApiUrl;
 
-    @Value("${openrouter.model:openrouter/auto}")
+    @Value("${openrouter.model:}")
     private String openRouterModel;
 
     private static final String HEADER_HTTP_REFERER = "HTTP-Referer";
@@ -159,13 +160,22 @@ public class MessageService extends AbstractResourceService<Message, MessageRepo
     }
 
     private Message mapClientError(HttpClientErrorException e) {
-        if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
-            return error("AI API Key is invalid or missing.");
+        switch (e.getStatusCode()) {
+            case HttpStatus.UNAUTHORIZED -> {
+                return error("AI API Key is invalid or missing.");
+            }
+            case HttpStatus.TOO_MANY_REQUESTS -> {
+                return error("Rate limit exceeded for AI API.");
+            }
+            case HttpStatus.NOT_FOUND -> {
+                String errorBody = e.getResponseBodyAsString();
+                if (errorBody.contains("data policy") || errorBody.contains("Free model")) {
+                    return error("OpenRouter configuration issue: Free models require data policy settings. Visit https://openrouter.ai/settings/privacy to configure.");
+                }
+                return error("AI model not found or unavailable.");
+            }
+            default -> throw new IllegalStateException("Unexpected value: " + e.getStatusCode());
         }
-        if (e.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
-            return error("Rate limit exceeded for AI API.");
-        }
-        return error("Failed to communicate with AI. Status: " + e.getStatusCode());
     }
 
     private Message assistant(String content) {
@@ -178,14 +188,14 @@ public class MessageService extends AbstractResourceService<Message, MessageRepo
 
     @Transactional
     public int softDeleteMessagesByCharacterId(UUID characterId) {
-        return messageRepository.bulkUpdateResourceStatusByCharacterId(characterId, jr.chatbot.enums.ResourceStatusEnum.DELETED);
+        return messageRepository.bulkUpdateResourceStatusByCharacterId(characterId, ResourceStatusEnum.DELETED);
     }
 
     @Transactional
     public void softDeleteMessagesByChatId(UUID chatId) {
         List<Message> messages = messageRepository.findByChatId(chatId);
         for (Message message : messages) {
-            message.setResourceStatus(jr.chatbot.enums.ResourceStatusEnum.DELETED);
+            message.setResourceStatus(ResourceStatusEnum.DELETED);
             messageRepository.save(message);
         }
     }

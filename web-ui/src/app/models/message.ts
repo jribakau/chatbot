@@ -5,4 +5,6 @@ export interface Message extends Resource {
   role: MessageRoleEnum;
   content: string;
   timestamp?: Date;
+  versions?: string[];
+  currentVersionIndex?: number;
 }
