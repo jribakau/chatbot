@@ -37,6 +37,7 @@ public class ChatService extends AbstractResourceService<Chat, ChatRepository> {
         return repository.findAllByCharacterIdAndOwnerIdWithMessages(characterId, ownerId);
     }
 
+    @Transactional
     public void addMessageToChat(UUID chatId, Message message) {
         Chat chat = findByIdOrThrow(chatId);
         message.setChat(chat);

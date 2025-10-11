@@ -181,6 +181,7 @@ public class MessageService extends AbstractResourceService<Message, MessageRepo
         return messageRepository.bulkUpdateResourceStatusByCharacterId(characterId, jr.chatbot.enums.ResourceStatusEnum.DELETED);
     }
 
+    @Transactional
     public void softDeleteMessagesByChatId(UUID chatId) {
         List<Message> messages = messageRepository.findByChatId(chatId);
         for (Message message : messages) {

@@ -48,7 +48,7 @@ public class ChatController extends AbstractResourceController<Chat, ChatService
     @GetMapping(params = "characterId")
     public ResponseEntity<List<Chat>> getChatsByCharacter(@RequestParam UUID characterId) {
         UUID currentUserId = service.getCurrentUserIdOrThrow();
-        List<Chat> chats = service.findAllChatsByCharacterAndOwner(characterId, currentUserId);
+        List<Chat> chats = service.findAllChatsByCharacterAndOwnerWithMessages(characterId, currentUserId);
         return ResponseEntity.ok(chats);
     }
 
